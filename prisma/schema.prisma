@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Social {
+  id        String    @id @default(cuid())
+  icon      String
+  url       String
+  Page      Page[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Skill {
+  id             String           @id @default(cuid())
+  name           String
+  icon           String
+  Project        Project[]
+  WorkExperience WorkExperience[]
+  Page           Page[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+}
+
+model Project {
+  id            String    @id @default(cuid())
+  title         String
+  description   String
+  Feature       String[]
+  Technology    String[]
+  githubUrl     String
+  liveUrl       String
+  thumbnail     String
+  pageThumbnail String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  Page          Page[]
+  Skill         Skill?    @relation(fields: [skillId], references: [id])
+  skillId       String?
+}
+
+model WorkExperience {
+  id          String    @id @default(cuid())
+  companyName String
+  companyUrl  String
+  role        String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  Page        Page[]
+  Skill       Skill?    @relation(fields: [skillId], references: [id])
+  skillId     String?
+}
+
+model Page {
+  id               String          @id @default(cuid())
+  introduction     String
+  profilePicture   String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  Social           Social?         @relation(fields: [socialId], references: [id])
+  socialId         String?
+  Skill            Skill?          @relation(fields: [skillId], references: [id])
+  skillId          String?
+  Project          Project?        @relation(fields: [projectId], references: [id])
+  projectId        String?
+  WorkExperience   WorkExperience? @relation(fields: [workExperienceId], references: [id])
+  workExperienceId String?
+}
