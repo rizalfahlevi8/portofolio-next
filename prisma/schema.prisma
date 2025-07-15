@@ -9,9 +9,9 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Social {
+model Sosmed {
   id        String    @id @default(cuid())
-  icon      String
+  name      String    @unique
   url       String
   Page      Page[]
   createdAt DateTime  @default(now())
@@ -67,8 +67,8 @@ model Page {
   profilePicture   String
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
-  Social           Social?         @relation(fields: [socialId], references: [id])
-  socialId         String?
+  Sosmed           Sosmed?         @relation(fields: [sosmedId], references: [id])
+  sosmedId         String?
   Skill            Skill?          @relation(fields: [skillId], references: [id])
   skillId          String?
   Project          Project?        @relation(fields: [projectId], references: [id])
