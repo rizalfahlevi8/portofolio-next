@@ -72,7 +72,7 @@ export default function Skill() {
 
     // Tambahkan null checks untuk skills
     const validSkills = skills?.filter(skill => skill && skill.id) || [];
-    
+
     // Group skills into rows of 3
     const groupedSkills = [];
     for (let i = 0; i < validSkills.length; i += 3) {
@@ -298,15 +298,14 @@ export default function Skill() {
                                             {row.map((skill) => {
                                                 // Additional null check untuk skill
                                                 if (!skill || !skill.id) return null;
-                                                
+
                                                 const isTemp = isTemporarySkill(skill.id);
-                                                
+
                                                 return (
-                                                    <div 
-                                                        key={skill.id} 
-                                                        className={`p-4 bg-background rounded-lg border hover:border-primary/20 transition-colors group relative ${
-                                                            isTemp ? 'opacity-60' : ''
-                                                        }`}
+                                                    <div
+                                                        key={skill.id}
+                                                        className={`p-4 bg-background rounded-lg border hover:border-primary/20 transition-colors group relative ${isTemp ? 'opacity-60' : ''
+                                                            }`}
                                                     >
                                                         <div className="flex items-center gap-3 mb-3">
                                                             <div className="flex-shrink-0">
@@ -323,7 +322,7 @@ export default function Skill() {
                                                                 <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
                                                             )}
                                                         </div>
-                                                        
+
                                                         {!isTemp && (
                                                             <div className="absolute top-2 right-2">
                                                                 <SkillEditDropdown

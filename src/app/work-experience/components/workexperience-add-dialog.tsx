@@ -119,11 +119,15 @@ export default function AddWorkExperienceDialog({ onWorkExperienceAdded }: AddWo
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button className="h-10">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Tambah
+                <Button className="h-10 w-full justify-between px-4">
+                    <span className="flex items-center">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Tambah
+                    </span>
+                    <span />
                 </Button>
             </DialogTrigger>
+
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
@@ -353,33 +357,33 @@ export default function AddWorkExperienceDialog({ onWorkExperienceAdded }: AddWo
                                                 <FormControl>
                                                     <ClientOnly>
                                                         <ReactSelect<
-  { label: string; value: string; icon: string }, // ⬅️ langsung di sini
-  true
->
-  isMulti
-  options={skills.map(skill => ({
-    label: skill.name,
-    value: skill.id,
-    icon: skill.icon,
-  }))}
-  value={skills
-    .filter(skill => field.value?.includes(skill.id))
-    .map(skill => ({
-      label: skill.name,
-      value: skill.id,
-      icon: skill.icon,
-    }))}
-  onChange={(selectedOptions) => {
-    field.onChange(selectedOptions.map(option => option.value));
-  }}
-  formatOptionLabel={(option: { label: string; value: string; icon: string }) => (
-    <span className="flex items-center gap-2">
-      <i className={`${option.icon} text-2xl`} />
-      {option.label}
-    </span>
-  )}
-  isDisabled={isSubmitting || isLoadingSkills}
-/>
+                                                            { label: string; value: string; icon: string }, // ⬅️ langsung di sini
+                                                            true
+                                                        >
+                                                            isMulti
+                                                            options={skills.map(skill => ({
+                                                                label: skill.name,
+                                                                value: skill.id,
+                                                                icon: skill.icon,
+                                                            }))}
+                                                            value={skills
+                                                                .filter(skill => field.value?.includes(skill.id))
+                                                                .map(skill => ({
+                                                                    label: skill.name,
+                                                                    value: skill.id,
+                                                                    icon: skill.icon,
+                                                                }))}
+                                                            onChange={(selectedOptions) => {
+                                                                field.onChange(selectedOptions.map(option => option.value));
+                                                            }}
+                                                            formatOptionLabel={(option: { label: string; value: string; icon: string }) => (
+                                                                <span className="flex items-center gap-2">
+                                                                    <i className={`${option.icon} text-2xl`} />
+                                                                    {option.label}
+                                                                </span>
+                                                            )}
+                                                            isDisabled={isSubmitting || isLoadingSkills}
+                                                        />
 
                                                     </ClientOnly>
                                                 </FormControl>

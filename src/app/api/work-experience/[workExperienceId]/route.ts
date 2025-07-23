@@ -1,39 +1,25 @@
 import { Prisma } from "@/generated/prisma";
 import db from "@/lib/db";
 
-export async function GET() {
+export async function DELETE(
+  _req: Request,
+  context: { params: Promise<{ workExperienceId: string }> }
+) {
   try {
-    const workExperience = await db.workExperience.findMany({
-      select: {
-        id: true,
-        position: true,
-        employmenttype: true,
-        company: true,
-        location: true,
-        locationtype: true,
-        description: true,
-        startDate: true,
-        endDate: true,
-        Skills: {
-          select: {
-            id: true,
-            name: true,
-            icon: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
+    const { workExperienceId } = await context.params;
+
+    const workExperience = await db.workExperience.deleteMany({
+      where: {
+        id: workExperienceId,
       },
     });
 
     return Response.json(workExperience);
   } catch (error) {
-    console.error("[WORK_EXPERIENCE_GET]", error);
-    return new Response("Internal Error", { status: 500 });
+    console.log("WORK_EXPERIENCE_DELETE]", error);
+    return new Response("Internal error", { status: 500 });
   }
 }
-
 
 export async function PUT(
   _req: Request,
@@ -43,10 +29,7 @@ export async function PUT(
     const { workExperienceId } = await context.params;
     const body = await _req.json();
 
-    console.log('Received body:', body); // Debug log
-
     const { 
-      id, 
       position, 
       employmenttype, 
       company, 
@@ -59,7 +42,6 @@ export async function PUT(
       skillId
     } = body;
 
-    // Validasi dan normalisasi skills
     let skillIds: string[] = [];
     
     if (skills && Array.isArray(skills)) {
@@ -73,36 +55,31 @@ export async function PUT(
     }
 
     const updateData: Prisma.WorkExperienceUpdateInput = {
-      id,
       position,
       employmenttype,
       company,
       location,
       locationtype,
       description,
-      startDate,
-      endDate,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : null,
     };
 
-    // Update Skills relation
     if (skillIds.length > 0) {
       updateData.Skills = {
         set: skillIds.map((skillId: string) => ({ id: skillId })),
       };
     } else {
-      // Clear semua skills jika tidak ada yang dikirim
       updateData.Skills = {
         set: [],
       };
     }
 
-    // ✅ PERBAIKAN: Pastikan response mengembalikan data lengkap dengan Skills
     const workExperience = await db.workExperience.update({
       where: {
         id: workExperienceId,
       },
       data: updateData,
-      // ✅ TAMBAHKAN include untuk mengembalikan Skills
       include: {
         Skills: {
           select: {

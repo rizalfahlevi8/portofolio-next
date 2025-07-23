@@ -19,7 +19,7 @@ export function useWorkExperienceManager(): UseWorkExperienceManagerReturn {
     try {
       setIsLoading(true);
       const response = await axios.get<WorkExperience[]>('/api/work-experience');
-      
+
       if (Array.isArray(response.data)) {
         setWorkExperiences(response.data);
       } else {
@@ -56,12 +56,12 @@ export function useWorkExperienceManager(): UseWorkExperienceManagerReturn {
 
       // Ganti dengan response data jika ada, atau fallback ke optimistic data
       if (response.data && response.data.id) {
-        setWorkExperiences(prev => prev.map(workExperience => 
+        setWorkExperiences(prev => prev.map(workExperience =>
           workExperience.id === tempId ? response.data : workExperience
         ));
       } else {
         // Fallback: tetap gunakan optimistic data dengan ID permanen
-        setWorkExperiences(prev => prev.map(workExperience => 
+        setWorkExperiences(prev => prev.map(workExperience =>
           workExperience.id === tempId ? { ...optimisticWorkExperience, id: `work-experience-${Date.now()}` } : workExperience
         ));
       }
@@ -72,13 +72,13 @@ export function useWorkExperienceManager(): UseWorkExperienceManagerReturn {
   }, []);
 
   const updateWorkExperience = useCallback(async (workExperienceId: string, data: WorkExperienceFormValues) => {
+
     const workExperienceToUpdate = workExperiences.find(workExperience => workExperience.id === workExperienceId);
     if (!workExperienceToUpdate) {
-      console.error('Work experience not found for update:', workExperienceId);
+      console.error('❌ Work experience not found for update:', workExperienceId);
       return;
     }
 
-    // Optimistic update - simpan data yang sudah diupdate
     const updatedWorkExperience: WorkExperience = {
       ...workExperienceToUpdate,
       position: data.position,
@@ -89,15 +89,15 @@ export function useWorkExperienceManager(): UseWorkExperienceManagerReturn {
       description: data.description,
       startDate: data.startDate,
       endDate: data.endDate ?? null,
-      Skills: [],
+      Skills: workExperienceToUpdate.Skills || [], 
     };
 
-    setWorkExperiences(prev => prev.map(workExperience => 
+    setWorkExperiences(prev => prev.map(workExperience =>
       workExperience.id === workExperienceId ? updatedWorkExperience : workExperience
     ));
 
     try {
-      const response = await axios.put<WorkExperience>(`/api/work-experience/${workExperienceId}`, {
+      const requestData = {
         id: workExperienceId,
         position: data.position,
         employmenttype: data.employmenttype,
@@ -107,27 +107,25 @@ export function useWorkExperienceManager(): UseWorkExperienceManagerReturn {
         description: data.description,
         startDate: data.startDate,
         endDate: data.endDate,
-        skillId: data.skillId || undefined,
-      });
-      
-      // Update dengan response data jika valid, jika tidak tetap gunakan optimistic update
+        skillId: data.skillId || [],
+      };
+
+      const response = await axios.put<WorkExperience>(`/api/work-experience/${workExperienceId}`, requestData);
+
       if (response.data && response.data.id) {
-        setWorkExperiences(prev => prev.map(workExperience => 
+        setWorkExperiences(prev => prev.map(workExperience =>
           workExperience.id === workExperienceId ? response.data : workExperience
         ));
       } else {
-        console.warn('API update response invalid, keeping optimistic update');
-        // Optimistic update sudah di-set di atas, tidak perlu action tambahan
+        await fetchWorkExperiences();
       }
     } catch (error) {
-      console.error('Error updating work experience:', error);
-      // Rollback ke data original jika gagal
-      setWorkExperiences(prev => prev.map(workExperience => 
+      setWorkExperiences(prev => prev.map(workExperience =>
         workExperience.id === workExperienceId ? workExperienceToUpdate : workExperience
       ));
       throw error;
     }
-  }, [workExperiences]);
+  }, [workExperiences, fetchWorkExperiences]);
 
   const deleteWorkExperience = useCallback(async (workExperienceId: string) => {
     const workExperienceToDelete = workExperiences.find(workExperience => workExperience.id === workExperienceId);
@@ -135,7 +133,7 @@ export function useWorkExperienceManager(): UseWorkExperienceManagerReturn {
       console.error('Work experience not found for deletion:', workExperienceId);
       return;
     }
-    
+
     // Optimistic delete
     setWorkExperiences(prev => prev.filter(workExperience => workExperience.id !== workExperienceId));
 
@@ -143,7 +141,6 @@ export function useWorkExperienceManager(): UseWorkExperienceManagerReturn {
       await axios.delete(`/api/work-experience/${workExperienceId}`);
     } catch (error) {
       console.error('Error deleting work experience:', error);
-      // Rollback - tambahkan kembali work experience yang dihapus
       setWorkExperiences(prev => [...prev, workExperienceToDelete]);
       throw error;
     }
