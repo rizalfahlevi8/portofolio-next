@@ -5,6 +5,7 @@ import {
   Award,
   BookOpen,
   Bot,
+  BriefcaseBusiness,
   Command,
   Frame,
   LifeBuoy,
@@ -53,6 +54,11 @@ const data = {
       name: "Social Media",
       url: "/sosmed",
       icon: Podcast,
+    },
+    {
+      name: "Work Experience",
+      url: "/work-experience",
+      icon: BriefcaseBusiness,
     },
   ],
   navMain: [

@@ -12,7 +12,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SosmedFormValues, sosmedSchema } from "@/domain/sosmed-schema";
 import { useSosmedManager } from "@/hooks/useSosmed";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Code, ExternalLink, Link2, Loader2, Plus, Save } from "lucide-react";
+import { Code, Link2, Loader2, Plus, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -126,7 +126,7 @@ export default function Sosmed() {
                                                             <div className="relative">
                                                                 <Input
                                                                     type="text"
-                                                                    placeholder="instagram"
+                                                                    placeholder="Ex: instagram"
                                                                     value={field.value?.toLowerCase() ?? ""}
                                                                     onChange={(e) => field.onChange(e.target.value.toLowerCase())}
                                                                     className="pr-12 lowercase"
@@ -159,7 +159,7 @@ export default function Sosmed() {
                                                                 </span>
                                                                 <Input
                                                                     type="text"
-                                                                    placeholder="https://instagram.com/yourusername"
+                                                                    placeholder="Ex: https://instagram.com/yourusername"
                                                                     value={field.value?.toLowerCase() ?? ""}
                                                                     onChange={(e) => field.onChange(e.target.value.toLowerCase())}
                                                                     className="pl-10 lowercase"
