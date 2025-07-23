@@ -8,7 +8,7 @@ import { WorkExperience, WorkExperienceFormValues, workExperienceSchema } from "
 import { useSkillsManager } from "@/hooks/useSkill";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
-import { Edit, Loader2, MoreHorizontal, Trash2, Save, Plus, X, Calendar } from "lucide-react";
+import { Edit, Loader2, MoreHorizontal, Trash2, Save, Plus, X, Calendar, Briefcase } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -50,7 +50,7 @@ export function WorkExperienceEditDropdown({
             description: workExperience.description || [""],
             startDate: workExperience.startDate,
             endDate: workExperience.endDate || null,
-            skillId: workExperience.Skills?.map(skill => skill.id) || [], 
+            skillId: workExperience.Skills?.map(skill => skill.id) || [],
         },
     });
 
@@ -597,9 +597,12 @@ export function WorkExperienceEditDropdown({
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
-                        <div className="flex items-center gap-3 p-3 bg-destructive/10 rounded-lg border border-destructive/20">
-                            <span className="font-medium">{workExperience.position}</span>
-                            <span className="font-medium">{workExperience.company}</span>
+                        <div className="flex items-start gap-3 p-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                            <Briefcase className="w-5 h-5 mt-1 text-destructive" />
+                            <div className="flex flex-col">
+                                <span className="font-medium text-sm">{workExperience.position}</span>
+                                <span className="text-muted-foreground text-xs">{workExperience.company}</span>
+                            </div>
                         </div>
                         <div className="flex gap-2">
                             <Button

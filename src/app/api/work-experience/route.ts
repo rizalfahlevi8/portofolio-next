@@ -1,4 +1,3 @@
-import { Prisma } from "@/generated/prisma";
 import db from "@/lib/db";
 
 export async function GET() {
@@ -35,89 +34,31 @@ export async function GET() {
 }
 
 
-export async function PUT(
-  _req: Request,
-  context: { params: Promise<{ workExperienceId: string }> }
-) {
-  try {
-    const { workExperienceId } = await context.params;
-    const body = await _req.json();
+export async function POST(req: Request) {
+    try {
+        const body = await req.json();
 
-    console.log('Received body:', body); // Debug log
+        const { position, employmenttype, company, location, locationtype, description, startDate, endDate, skillId } = body;
 
-    const { 
-      id, 
-      position, 
-      employmenttype, 
-      company, 
-      location, 
-      locationtype, 
-      description, 
-      startDate, 
-      endDate, 
-      skills,
-      skillId
-    } = body;
+        const workExperience = await db.workExperience.create({
+            data: {
+                position,
+                employmenttype,
+                company,
+                location,
+                locationtype,
+                description,
+                startDate,
+                endDate,
+                Skills: {
+                    connect: skillId?.map((id: string) => ({ id })) || []
+                }
+            }
+        });
 
-    // Validasi dan normalisasi skills
-    let skillIds: string[] = [];
-    
-    if (skills && Array.isArray(skills)) {
-      skillIds = skills;
-    } else if (skillId && Array.isArray(skillId)) {
-      skillIds = skillId;
-    } else if (typeof skills === 'string') {
-      skillIds = [skills];
-    } else if (typeof skillId === 'string') {
-      skillIds = [skillId];
+        return Response.json(workExperience);
+    } catch (error) {
+        console.log("[SOSMED_POST]", error);
+        return new Response("Internal Error", { status: 500 });
     }
-
-    const updateData: Prisma.WorkExperienceUpdateInput = {
-      id,
-      position,
-      employmenttype,
-      company,
-      location,
-      locationtype,
-      description,
-      startDate,
-      endDate,
-    };
-
-    // Update Skills relation
-    if (skillIds.length > 0) {
-      updateData.Skills = {
-        set: skillIds.map((skillId: string) => ({ id: skillId })),
-      };
-    } else {
-      // Clear semua skills jika tidak ada yang dikirim
-      updateData.Skills = {
-        set: [],
-      };
-    }
-
-    // ✅ PERBAIKAN: Pastikan response mengembalikan data lengkap dengan Skills
-    const workExperience = await db.workExperience.update({
-      where: {
-        id: workExperienceId,
-      },
-      data: updateData,
-      // ✅ TAMBAHKAN include untuk mengembalikan Skills
-      include: {
-        Skills: {
-          select: {
-            id: true,
-            name: true,
-            icon: true,
-          },
-        },
-      },
-    });
-
-    return Response.json(workExperience);
-
-  } catch (error) {
-    console.log('[WORK_EXPERIENCE_UPDATE]', error);
-    return new Response("Internal error", { status: 500 });
-  }
 }

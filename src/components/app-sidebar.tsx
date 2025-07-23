@@ -7,6 +7,7 @@ import {
   Bot,
   BriefcaseBusiness,
   Command,
+  FilePen,
   Frame,
   LifeBuoy,
   Map,
@@ -59,6 +60,11 @@ const data = {
       name: "Work Experience",
       url: "/work-experience",
       icon: BriefcaseBusiness,
+    },
+    {
+      name: "Project",
+      url: "/project",
+      icon: FilePen,
     },
   ],
   navMain: [
