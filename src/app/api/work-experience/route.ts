@@ -33,7 +33,6 @@ export async function GET() {
   }
 }
 
-
 export async function POST(req: Request) {
     try {
         const body = await req.json();
@@ -58,7 +57,7 @@ export async function POST(req: Request) {
 
         return Response.json(workExperience);
     } catch (error) {
-        console.log("[SOSMED_POST]", error);
+        console.log("[WORK_EXPERIENCE_POST]", error);
         return new Response("Internal Error", { status: 500 });
     }
 }

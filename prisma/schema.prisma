@@ -22,12 +22,12 @@ model Project {
   id            String    @id @default(cuid())
   title         String
   description   String
-  Feature       String[]
-  Technology    String[]
+  feature       String[]
+  technology    String[]
   githubUrl     String
   liveUrl       String
   thumbnail     String
-  pageThumbnail String
+  photo String[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
   Page          Page[]
