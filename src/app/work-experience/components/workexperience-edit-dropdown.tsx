@@ -18,7 +18,7 @@ import ClientOnly from "@/components/ClientOnly";
 interface WorkExperienceEditDropdownProps {
     workExperience: WorkExperience;
     onUpdate: (workExperienceId: string, data: WorkExperienceFormValues) => Promise<void>;
-    onDelete: (workExperienceId: string, workExperienceName: string) => Promise<void>;
+    onDelete: (workExperienceId: string) => Promise<void>;
     isUpdating?: boolean;
     isDeleting?: boolean;
     disabled?: boolean;
@@ -131,8 +131,6 @@ export function WorkExperienceEditDropdown({
             : null;
         editForm.setValue("endDate", endDate);
 
-        editForm.setValue("skillId", workExperience.Skills?.map(skill => skill.id) || []);
-
         // Set description fields
         const descriptions = Array.isArray(workExperience.description)
             ? workExperience.description
@@ -167,7 +165,7 @@ export function WorkExperienceEditDropdown({
 
     const handleDelete = async () => {
         try {
-            await onDelete(workExperience.id, workExperience.position);
+            await onDelete(workExperience.id);
             setIsDeleteDialogOpen(false);
             toast.success(`Pengalaman kerja "${workExperience.position}" berhasil dihapus!`);
         } catch (error) {

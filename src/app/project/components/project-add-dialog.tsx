@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Save, X, Upload, Image } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
+import NextImage from "next/image";
 import ReactSelect from "react-select";
 import toast from "react-hot-toast";
 
@@ -27,7 +28,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
 
     const [featureFields, setFeatureFields] = useState<string[]>([""]);
     const [technologyFields, setTechnologyFields] = useState<string[]>([""]);
-    
+
     // File states
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [photoFiles, setPhotoFiles] = useState<File[]>([]);
@@ -110,7 +111,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
         if (files) {
             const fileArray = Array.from(files);
             setPhotoFiles(prev => [...prev, ...fileArray]);
-            
+
             // Create previews for new files
             fileArray.forEach(file => {
                 const previewUrl = URL.createObjectURL(file);
@@ -189,20 +190,20 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
         });
         setFeatureFields([""]);
         setTechnologyFields([""]);
-        
+
         // Reset file states
         setThumbnailFile(null);
         setPhotoFiles([]);
-        
+
         // Clean up preview URLs
         if (thumbnailPreview) {
             URL.revokeObjectURL(thumbnailPreview);
         }
         photosPreviews.forEach(url => URL.revokeObjectURL(url));
-        
+
         setThumbnailPreview("");
         setPhotosPreviews([]);
-        
+
         // Reset file inputs
         if (thumbnailInputRef.current) {
             thumbnailInputRef.current.value = "";
@@ -355,7 +356,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                                         )}
                                     />
                                 </div>
-                                
+
                                 <div className="lg:col-span-full">
                                     <FormField
                                         control={form.control}
@@ -505,12 +506,14 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                                                 </span>
                                             )}
                                         </div>
-                                        
+
                                         {thumbnailPreview && (
                                             <div className="mt-4 relative inline-block">
-                                                <img
+                                                <NextImage
                                                     src={thumbnailPreview}
                                                     alt="Thumbnail preview"
+                                                    width={128}
+                                                    height={128}
                                                     className="w-32 h-32 object-cover rounded-lg border"
                                                 />
                                                 <Button
@@ -525,7 +528,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                                                 </Button>
                                             </div>
                                         )}
-                                        
+
                                         {!thumbnailFile && (
                                             <p className="text-sm font-medium text-destructive mt-2">
                                                 Thumbnail is required
@@ -566,16 +569,19 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                                                 </span>
                                             )}
                                         </div>
-                                        
+
                                         {photosPreviews.length > 0 && (
                                             <div className="mt-4 grid grid-cols-3 gap-4">
                                                 {photosPreviews.map((preview, index) => (
                                                     <div key={index} className="relative">
-                                                        <img
+                                                        <NextImage
                                                             src={preview}
                                                             alt={`Photo preview ${index + 1}`}
+                                                            width={300}
+                                                            height={96}
                                                             className="w-full h-24 object-cover rounded-lg border"
                                                         />
+
                                                         <Button
                                                             type="button"
                                                             variant="destructive"
@@ -590,7 +596,6 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                                                 ))}
                                             </div>
                                         )}
-                                        
                                         {photoFiles.length === 0 && (
                                             <p className="text-sm font-medium text-destructive mt-2">
                                                 At least one photo is required
@@ -667,7 +672,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                                         )}
                                     />
                                 </div>
-                                
+
                                 <div className="lg:col-span-full">
                                     <FormField
                                         control={form.control}
