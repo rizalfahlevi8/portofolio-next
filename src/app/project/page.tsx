@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProjectManager } from "@/hooks/useProject";
-import { deleteFromSupabase, getSupabaseImageUrl } from "@/lib/supabase";
 import {
     Code,
     Loader2,
@@ -53,14 +52,23 @@ export default function Project() {
         });
     };
 
-    const handleUpdateProject = async (projectId: string, data: ProjectFormValues) => {
+    const handleUpdateProject = async (projectId: string, updateData: {
+        data: ProjectFormValues;
+        thumbnailFile?: File | null;
+        photoFiles?: File[];
+        existingPhotos?: string[];
+        deletedPhotos?: string[];
+        thumbnailDeleted?: boolean;
+        oldThumbnail?: string;
+    }) => {
         setUpdatingId(projectId);
         try {
-            await updateProject(projectId, data);
+            await updateProject(projectId, updateData);
         } finally {
             setUpdatingId(null);
         }
     };
+
 
     const handleDeleteProject = async (projectId: string) => {
         const data = project.find((p) => p.id === projectId);
@@ -68,14 +76,12 @@ export default function Project() {
 
         setDeletingId(projectId);
         try {
-            await deleteFromSupabase(data.thumbnail, 'thumbnails');
-            await Promise.all(data.photo.map((path) => deleteFromSupabase(path, 'photos')));
+            // Jika ingin hapus file di storage, lakukan di backend
             await deleteProject(projectId);
         } finally {
             setDeletingId(null);
         }
     };
-
 
     return (
         <SidebarProvider>
@@ -102,7 +108,7 @@ export default function Project() {
                         <div className="space-y-4">
                             {validProjects.map((projectItem) => {
                                 const isTemp = isTemporaryProject(projectItem.id);
-                                const thumbnailUrl = projectItem.thumbnail ? getSupabaseImageUrl(projectItem.thumbnail, 'thumbnails') : null;
+                                const thumbnailUrl = projectItem.thumbnail || null;
 
                                 return (
                                     <Card
@@ -256,7 +262,7 @@ export default function Project() {
                                                                     </div>
                                                                     <div className="flex gap-1">
                                                                         {projectItem.photo.slice(0, 4).map((photo, index) => {
-                                                                            const photoUrl = getSupabaseImageUrl(photo, 'photos');
+                                                                            const photoUrl = photo;
                                                                             return (
                                                                                 <div key={index} className="relative w-12 h-8 rounded overflow-hidden border flex-shrink-0">
                                                                                     <Image

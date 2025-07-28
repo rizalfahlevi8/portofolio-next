@@ -16,6 +16,17 @@ export interface Project {
   Skills: Skill[];
 }
 
+export interface UpdateProjectOptions {
+  thumbnailFile?: File | null;
+  thumbnailDeleted?: boolean;
+  existingPhotos?: File[];
+  photoFiles?: File[];
+  deletedPhotos?: string[];
+  allPhotosDeleted?: boolean;
+  setIsUploadingThumbnail?: (val: boolean) => void;
+  setIsUploadingPhotos?: (val: boolean) => void;
+}
+
 // Updated schema dengan validasi yang lebih fleksibel
 export const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),

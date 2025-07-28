@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Project, ProjectFormValues, projectSchema } from "@/domain/project-schema";
 import { useSkillsManager } from "@/hooks/useSkill";
-import { getSupabaseImageUrl, uploadToSupabase, uploadMultipleFiles, deleteFromSupabase } from "@/lib/supabase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Loader2, MoreHorizontal, Plus, Save, Trash2, X, Upload, Image } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
@@ -18,7 +17,15 @@ import toast from "react-hot-toast";
 
 interface ProjectEditDropdownProps {
     project: Project;
-    onUpdate: (projectId: string, data: ProjectFormValues) => Promise<void>;
+    onUpdate: (projectId: string, updateData: {
+        data: ProjectFormValues;
+        thumbnailFile?: File | null;
+        photoFiles?: File[];
+        existingPhotos?: string[];
+        deletedPhotos?: string[];
+        thumbnailDeleted?: boolean;
+        oldThumbnail?: string;
+    }) => Promise<void>;
     onDelete: (projectId: string) => Promise<void>;
     isUpdating?: boolean;
     isDeleting?: boolean;
@@ -46,11 +53,11 @@ export function ProjectEditDropdown({
     const [photosPreviews, setPhotosPreviews] = useState<string[]>([]);
     const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
     const [deletedPhotos, setDeletedPhotos] = useState<string[]>([]);
-    
+
     // States for thumbnail and photos management
     const [thumbnailDeleted, setThumbnailDeleted] = useState<boolean>(false);
     const [allPhotosDeleted, setAllPhotosDeleted] = useState<boolean>(false);
-    
+
     // Upload states
     const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
     const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
@@ -146,12 +153,12 @@ export function ProjectEditDropdown({
         // Add all existing photos to deleted list
         setDeletedPhotos(prev => [...prev, ...existingPhotos]);
         setExistingPhotos([]);
-        
+
         // Remove all new photos and their previews
         photosPreviews.forEach(url => URL.revokeObjectURL(url));
         setPhotoFiles([]);
         setPhotosPreviews([]);
-        
+
         // Reset file input
         if (photosInputRef.current) {
             photosInputRef.current.value = "";
@@ -220,99 +227,26 @@ export function ProjectEditDropdown({
         setTechnologyFields(newFields);
     };
 
-    const handleUpdate = async (data: ProjectFormValues) => {
+     const handleUpdate = async (data: ProjectFormValues) => {
         try {
-            // Validate photos - at least one photo is required
-            if (allPhotosDeleted) {
-                toast.error("Minimal satu foto harus ada!");
-                return;
-            }
+            setIsUploadingThumbnail(true);
+            setIsUploadingPhotos(true);
+            await onUpdate(project.id, {
+                data,
+                thumbnailFile,
+                photoFiles,
+                existingPhotos,
+                deletedPhotos,
+                thumbnailDeleted,
+                oldThumbnail: project.thumbnail || ""
+            });
 
-            let thumbnailPath = "";
-
-            // Handle thumbnail logic
-            if (thumbnailFile) {
-                // New thumbnail uploaded
-                setIsUploadingThumbnail(true);
-                // Delete old thumbnail if exists
-                if (project.thumbnail) {
-                    try {
-                        await deleteFromSupabase(project.thumbnail, 'thumbnails');
-                    } catch (error) {
-                        console.warn('Failed to delete old thumbnail:', error);
-                    }
-                }
-                const thumbnailResult = await uploadToSupabase(
-                    thumbnailFile,
-                    'thumbnails',
-                    'projects'
-                );
-                thumbnailPath = thumbnailResult.fileName;
-                setIsUploadingThumbnail(false);
-            } else if (!thumbnailDeleted && project.thumbnail) {
-                // Keep existing thumbnail
-                thumbnailPath = project.thumbnail;
-            } else if (thumbnailDeleted && project.thumbnail) {
-                // Delete existing thumbnail
-                try {
-                    await deleteFromSupabase(project.thumbnail, 'thumbnails');
-                } catch (error) {
-                    console.warn('Failed to delete thumbnail:', error);
-                }
-                thumbnailPath = "";
-            }
-
-            // Handle photos
-            let photoPaths = [...existingPhotos];
-
-            // Upload new photos if any
-            if (photoFiles.length > 0) {
-                setIsUploadingPhotos(true);
-                const photosResults = await uploadMultipleFiles(
-                    photoFiles,
-                    'photos',
-                    'projects'
-                );
-                photoPaths = [...photoPaths, ...photosResults.map(result => result.fileName)];
-                setIsUploadingPhotos(false);
-            }
-
-            // Delete removed photos from storage
-            if (deletedPhotos.length > 0) {
-                const deletePromises = deletedPhotos.map(async (photo) => {
-                    try {
-                        await deleteFromSupabase(photo, 'photos');
-                    } catch (error) {
-                        console.warn(`Failed to delete photo ${photo}:`, error);
-                    }
-                });
-                await Promise.allSettled(deletePromises);
-            }
-
-            // Prepare data for API
-            const filteredData = {
-                ...data,
-                feature: data.feature.filter(desc => desc.trim() !== ""),
-                technology: data.technology.filter(desc => desc.trim() !== ""),
-                thumbnail: thumbnailPath,
-                photo: photoPaths
-            };
-
-            console.log('Updating project with data:', filteredData);
-
-            // Update project via API
-            await onUpdate(project.id, filteredData);
-            
-            // Close dialog and reset form
             setIsEditDialogOpen(false);
-            toast.success("Proyek berhasil diupdate!");
-            
-        } catch (error) {
-            console.error("Error updating project:", error);
-            toast.error("Gagal mengupdate proyek. Silakan coba lagi.");
-        } finally {
             setIsUploadingThumbnail(false);
             setIsUploadingPhotos(false);
+        } catch (error) {
+            // Error handling is now done in the hook
+            console.error("Error in handleUpdate:", error);
         }
     };
 
@@ -381,7 +315,7 @@ export function ProjectEditDropdown({
                 URL.revokeObjectURL(thumbnailPreview);
             }
             photosPreviews.forEach(url => URL.revokeObjectURL(url));
-            
+
             // Reset form when closing
             editForm.reset();
             setFeatureFields([""]);
@@ -596,7 +530,7 @@ export function ProjectEditDropdown({
                                     {/* Thumbnail Edit Section */}
                                     <div className="lg:col-span-full">
                                         <FormLabel className="uppercase text-sm font-semibold text-gray-700">
-                                            Thumbnail (Optional)
+                                            Thumbnail*
                                         </FormLabel>
                                         <div className="mt-2 space-y-4">
                                             {/* Current Thumbnail */}
@@ -605,7 +539,7 @@ export function ProjectEditDropdown({
                                                     <p className="text-sm text-gray-600 mb-2">Current thumbnail:</p>
                                                     <div className="relative inline-block">
                                                         <NextImage
-                                                            src={getSupabaseImageUrl(project.thumbnail, 'thumbnails')}
+                                                            src={project.thumbnail}
                                                             alt="Current thumbnail"
                                                             width={128}
                                                             height={128}
@@ -627,9 +561,9 @@ export function ProjectEditDropdown({
 
                                             {/* Deleted thumbnail message */}
                                             {thumbnailDeleted && !thumbnailFile && (
-                                                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-sm text-yellow-800">
+                                                        <span className="text-sm text-red-800">
                                                             Thumbnail akan dihapus
                                                         </span>
                                                         <Button
@@ -689,8 +623,8 @@ export function ProjectEditDropdown({
                                                     className="flex items-center gap-2"
                                                 >
                                                     <Upload className="h-4 w-4" />
-                                                    {isUploadingThumbnail ? "Uploading..." : 
-                                                     project.thumbnail && !thumbnailDeleted ? "Change Thumbnail" : "Upload Thumbnail"}
+                                                    {isUploadingThumbnail ? "Uploading..." :
+                                                        project.thumbnail && !thumbnailDeleted ? "Change Thumbnail" : "Upload Thumbnail"}
                                                 </Button>
                                                 {thumbnailFile && (
                                                     <span className="text-sm text-gray-600">
@@ -746,7 +680,7 @@ export function ProjectEditDropdown({
                                                         {existingPhotos.map((photo, index) => (
                                                             <div key={index} className="relative">
                                                                 <NextImage
-                                                                    src={getSupabaseImageUrl(photo, 'photos')}
+                                                                    src={photo}
                                                                     alt={`Current photo ${index + 1}`}
                                                                     width={300}
                                                                     height={96}
@@ -953,13 +887,13 @@ export function ProjectEditDropdown({
                                         <Button
                                             type="submit"
                                             className="flex-1"
-                                            disabled={isUpdating || isUploadingThumbnail || isUploadingPhotos || allPhotosDeleted}
+                                            disabled={isUpdating || isUploadingThumbnail || isUploadingPhotos || thumbnailDeleted || allPhotosDeleted}
                                         >
                                             {isUpdating || isUploadingThumbnail || isUploadingPhotos ? (
                                                 <>
                                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                    {isUploadingThumbnail ? "Uploading Thumbnail..." : 
-                                                     isUploadingPhotos ? "Uploading Photos..." : "Mengupdate..."}
+                                                    {isUploadingThumbnail ? "Uploading Thumbnail..." :
+                                                        isUploadingPhotos ? "Uploading Photos..." : "Mengupdate..."}
                                                 </>
                                             ) : (
                                                 <>

@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { ProjectFormValues, projectSchema } from "@/domain/project-schema";
 import { useProjectManager } from "@/hooks/useProject";
 import { useSkillsManager } from "@/hooks/useSkill";
-import { uploadToSupabase, uploadMultipleFiles } from "@/lib/supabase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Save, X, Upload, Image } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
@@ -213,70 +212,52 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
         }
     };
 
-    const onSubmit = async (data: ProjectFormValues) => {
+     const onSubmit = async (data: ProjectFormValues) => {
         try {
             setIsSubmitting(true);
+            setIsUploadingThumbnail(!!thumbnailFile);
+            setIsUploadingPhotos(photoFiles.length > 0);
 
-            // Additional validation for files (since they're not in the form)
+            // Validasi file & field tetap sama
             if (!thumbnailFile) {
                 toast.error("Thumbnail harus diupload!");
+                setIsSubmitting(false);
                 return;
             }
-
             if (photoFiles.length === 0) {
                 toast.error("Minimal satu foto harus diupload!");
+                setIsSubmitting(false);
                 return;
             }
-
-            // Validate that features and technologies are not empty
             const filteredFeatures = featureFields.filter(feat => feat.trim() !== "");
             const filteredTechnologies = technologyFields.filter(tech => tech.trim() !== "");
 
             if (filteredFeatures.length === 0) {
                 toast.error("Minimal satu feature harus diisi!");
+                setIsSubmitting(false);
                 return;
             }
-
             if (filteredTechnologies.length === 0) {
                 toast.error("Minimal satu technology harus diisi!");
+                setIsSubmitting(false);
                 return;
             }
 
-            // Upload thumbnail
-            setIsUploadingThumbnail(true);
-            const thumbnailResult = await uploadToSupabase(
-                thumbnailFile,
-                'thumbnails',
-                'projects'
-            );
-            setIsUploadingThumbnail(false);
-
-            // Upload photos
-            setIsUploadingPhotos(true);
-            const photosResults = await uploadMultipleFiles(
-                photoFiles,
-                'photos',
-                'projects'
-            );
-            setIsUploadingPhotos(false);
-
-            const filteredData = {
+            // Prepare data (tanpa upload manual, biarkan backend yang handle upload)
+            const filteredData: ProjectFormValues = {
                 ...data,
                 feature: filteredFeatures,
                 technology: filteredTechnologies,
-                thumbnail: thumbnailResult.fileName,
-                photo: photosResults.map(result => result.fileName),
+                skillId: data.skillId ?? [],
             };
 
-            console.log("Submitting data:", filteredData); // Debug log
-
-            await addProject(filteredData);
+            // Panggil addProject dengan file
+            await addProject(filteredData, thumbnailFile, photoFiles);
 
             resetForm();
             setIsOpen(false);
             toast.success("Proyek berhasil ditambahkan!");
 
-            // Call callback to refresh the list
             if (onProjectAdded) {
                 onProjectAdded();
             }
@@ -284,9 +265,9 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
             console.error("Error adding project:", error);
             toast.error("Gagal menambahkan proyek. Silakan coba lagi.");
         } finally {
-            setIsSubmitting(false);
             setIsUploadingThumbnail(false);
             setIsUploadingPhotos(false);
+            setIsSubmitting(false);
         }
     };
 
