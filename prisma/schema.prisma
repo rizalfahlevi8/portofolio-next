@@ -13,25 +13,27 @@ model Sosmed {
   id        String    @id @default(cuid())
   name      String    @unique
   url       String
-  Page      Page[]
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  Page      Page?     @relation(fields: [pageId], references: [id])
+  pageId    String?
 }
 
 model Project {
-  id            String    @id @default(cuid())
-  title         String
-  description   String
-  feature       String[]
-  technology    String[]
-  githubUrl     String
-  liveUrl       String
-  thumbnail     String
-  photo String[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  Page          Page[]
-  Skills        Skill[]   @relation("SkillOnProject")
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  feature     String[]
+  technology  String[]
+  githubUrl   String
+  liveUrl     String
+  thumbnail   String
+  photo       String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  Skills      Skill[]   @relation("SkillOnProject")
+  Page        Page?     @relation(fields: [pageId], references: [id])
+  pageId      String?
 }
 
 model Skill {
@@ -40,9 +42,10 @@ model Skill {
   icon            String
   WorkExperiences WorkExperience[] @relation("SkillOnWorkExperience")
   Projects        Project[]        @relation("SkillOnProject")
-  Page            Page[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime?        @updatedAt
+  Page            Page?            @relation(fields: [pageId], references: [id])
+  pageId          String?
 }
 
 model WorkExperience {
@@ -57,22 +60,19 @@ model WorkExperience {
   endDate        DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt
-  Page           Page[]
   Skills         Skill[]   @relation("SkillOnWorkExperience")
+  Page           Page?     @relation(fields: [pageId], references: [id])
+  pageId         String?
 }
 
 model Page {
-  id               String          @id @default(cuid())
-  introduction     String
-  profilePicture   String
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  Sosmed           Sosmed?         @relation(fields: [sosmedId], references: [id])
-  sosmedId         String?
-  Skill            Skill?          @relation(fields: [skillId], references: [id])
-  skillId          String?
-  Project          Project?        @relation(fields: [projectId], references: [id])
-  projectId        String?
-  WorkExperience   WorkExperience? @relation(fields: [workExperienceId], references: [id])
-  workExperienceId String?
+  id              String           @id @default(cuid())
+  introduction    String
+  profilePicture  String
+  sosmed          Sosmed[]
+  projects        Project[]
+  workExperiences WorkExperience[]
+  skills          Skill[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
