@@ -43,7 +43,7 @@ const data = {
   resume: [
     {
       name: "About",
-      url: "#",
+      url: "/about",
       icon: User,
     },
     {

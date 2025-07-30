@@ -39,100 +39,100 @@ export async function DELETE(
 }
 
 async function saveFile(file: File, folder = "uploads") {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const uploadDir = path.join(process.cwd(), "public", folder);
-    await mkdir(uploadDir, { recursive: true }); // <--- FIX: Pastikan folder ada!
-    const filename = `${Date.now()}-${file.name}`;
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
-    return `/${folder}/${filename}`;
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const uploadDir = path.join(process.cwd(), "public", folder);
+  await mkdir(uploadDir, { recursive: true }); // <--- FIX: Pastikan folder ada!
+  const filename = `${Date.now()}-${file.name}`;
+  const filePath = path.join(uploadDir, filename);
+  await writeFile(filePath, buffer);
+  return `/${folder}/${filename}`;
 }
 
 // Helper untuk hapus file
 async function safeDeleteFile(filePath: string) {
-    if (!filePath) return;
-    const fullPath = path.join(process.cwd(), "public", filePath.startsWith("/") ? filePath : `/${filePath}`);
-    try {
-        await unlink(fullPath);
-    } catch (err) {
-        if ((err as NodeJS.ErrnoException)?.code !== "ENOENT") {
-            console.log(`[FILE_DELETE_ERROR]`, err);
-        }
+  if (!filePath) return;
+  const fullPath = path.join(process.cwd(), "public", filePath.startsWith("/") ? filePath : `/${filePath}`);
+  try {
+    await unlink(fullPath);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException)?.code !== "ENOENT") {
+      console.log(`[FILE_DELETE_ERROR]`, err);
     }
+  }
 }
 
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ projectId: string }> }
 ) {
-    try {
-        const { projectId } = await context.params;
-        const formData = await req.formData();
+  try {
+    const { projectId } = await context.params;
+    const formData = await req.formData();
 
-        // Ambil semua value
-        const title = formData.get("title") as string;
-        const description = formData.get("description") as string;
-        const feature = JSON.parse(formData.get("feature") as string) as string[];
-        const technology = JSON.parse(formData.get("technology") as string) as string[];
-        const githubUrl = formData.get("githubUrl") as string;
-        const liveUrl = formData.get("liveUrl") as string;
-        const skillId = JSON.parse(formData.get("skillId") as string) as string[];
+    // Ambil semua value
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const feature = JSON.parse(formData.get("feature") as string) as string[];
+    const technology = JSON.parse(formData.get("technology") as string) as string[];
+    const githubUrl = formData.get("githubUrl") as string;
+    const liveUrl = formData.get("liveUrl") as string;
+    const skillId = JSON.parse(formData.get("skillId") as string) as string[];
 
-        // Thumbnail logic
-        const oldThumbnail = formData.get("oldThumbnail") as string;
-        let thumbnailPath = oldThumbnail;
+    // Thumbnail logic
+    const oldThumbnail = formData.get("oldThumbnail") as string;
+    let thumbnailPath = oldThumbnail;
 
-        if (formData.has("thumbnail")) {
-            const file = formData.get("thumbnail") as File;
-            if (oldThumbnail) await safeDeleteFile(oldThumbnail);
-            thumbnailPath = await saveFile(file, "thumbnails");
-        } else if (formData.get("thumbnailDeleted") === "true") {
-            if (oldThumbnail) await safeDeleteFile(oldThumbnail);
-            thumbnailPath = "";
-        }
-
-        // Photos logic
-        const oldPhotos = JSON.parse(formData.get("oldPhotos") as string) as string[] || [];
-        const deletedPhotos = formData.has("deletedPhotos")
-            ? JSON.parse(formData.get("deletedPhotos") as string) as string[]
-            : [];
-        for (const del of deletedPhotos) {
-            await safeDeleteFile(del);
-        }
-        // Simpan foto baru
-        const photoFiles = formData.getAll("photo").filter(f => f instanceof File) as File[];
-        const newPhotos = await Promise.all(photoFiles.map(file => saveFile(file, "photos")));
-        const finalPhotos = [
-            ...oldPhotos.filter(x => !deletedPhotos.includes(x)),
-            ...newPhotos
-        ];
-
-        // Update database
-        const updateData: Prisma.ProjectUpdateInput = {
-            title,
-            description,
-            feature,
-            technology,
-            githubUrl,
-            liveUrl,
-            thumbnail: thumbnailPath,
-            photo: finalPhotos,
-            Skills: { set: skillId.map((id: string) => ({ id })) }
-        };
-
-
-        const project = await db.project.update({
-            where: { id: projectId },
-            data: updateData,
-            include: {
-                Skills: { select: { id: true, name: true, icon: true } }
-            }
-        });
-
-        return Response.json(project);
-    } catch (error) {
-        console.log('[PROJECT_UPDATE]', error);
-        return new Response("Internal error", { status: 500 });
+    if (formData.has("thumbnail")) {
+      const file = formData.get("thumbnail") as File;
+      if (oldThumbnail) await safeDeleteFile(oldThumbnail);
+      thumbnailPath = await saveFile(file, "thumbnails");
+    } else if (formData.get("thumbnailDeleted") === "true") {
+      if (oldThumbnail) await safeDeleteFile(oldThumbnail);
+      thumbnailPath = "";
     }
+
+    // Photos logic
+    const oldPhotos = JSON.parse(formData.get("oldPhotos") as string) as string[] || [];
+    const deletedPhotos = formData.has("deletedPhotos")
+      ? JSON.parse(formData.get("deletedPhotos") as string) as string[]
+      : [];
+    for (const del of deletedPhotos) {
+      await safeDeleteFile(del);
+    }
+    // Simpan foto baru
+    const photoFiles = formData.getAll("photo").filter(f => f instanceof File) as File[];
+    const newPhotos = await Promise.all(photoFiles.map(file => saveFile(file, "photos")));
+    const finalPhotos = [
+      ...oldPhotos.filter(x => !deletedPhotos.includes(x)),
+      ...newPhotos
+    ];
+
+    // Update database
+    const updateData: Prisma.ProjectUpdateInput = {
+      title,
+      description,
+      feature,
+      technology,
+      githubUrl,
+      liveUrl,
+      thumbnail: thumbnailPath,
+      photo: finalPhotos,
+      Skills: { set: skillId.map((id: string) => ({ id })) }
+    };
+
+
+    const project = await db.project.update({
+      where: { id: projectId },
+      data: updateData,
+      include: {
+        Skills: { select: { id: true, name: true, icon: true } }
+      }
+    });
+
+    return Response.json(project);
+  } catch (error) {
+    console.log('[PROJECT_UPDATE]', error);
+    return new Response("Internal error", { status: 500 });
+  }
 }

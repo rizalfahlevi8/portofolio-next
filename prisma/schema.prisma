@@ -15,8 +15,8 @@ model Sosmed {
   url       String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  Page      Page?     @relation(fields: [pageId], references: [id])
-  pageId    String?
+  About     About?    @relation(fields: [aboutId], references: [id])
+  aboutId   String?
 }
 
 model Project {
@@ -32,8 +32,8 @@ model Project {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
   Skills      Skill[]   @relation("SkillOnProject")
-  Page        Page?     @relation(fields: [pageId], references: [id])
-  pageId      String?
+  About       About?    @relation(fields: [aboutId], references: [id])
+  aboutId     String?
 }
 
 model Skill {
@@ -44,8 +44,7 @@ model Skill {
   Projects        Project[]        @relation("SkillOnProject")
   createdAt       DateTime         @default(now())
   updatedAt       DateTime?        @updatedAt
-  Page            Page?            @relation(fields: [pageId], references: [id])
-  pageId          String?
+  About           About[]          @relation("SkillOnAbout")
 }
 
 model WorkExperience {
@@ -61,18 +60,20 @@ model WorkExperience {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt
   Skills         Skill[]   @relation("SkillOnWorkExperience")
-  Page           Page?     @relation(fields: [pageId], references: [id])
-  pageId         String?
+  About          About?    @relation(fields: [aboutId], references: [id])
+  aboutId        String?
 }
 
-model Page {
+model About {
   id              String           @id @default(cuid())
+  name            String
+  jobTitle        String
   introduction    String
   profilePicture  String
   sosmed          Sosmed[]
   projects        Project[]
   workExperiences WorkExperience[]
-  skills          Skill[]
+  Skills          Skill[]          @relation("SkillOnAbout")
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 }

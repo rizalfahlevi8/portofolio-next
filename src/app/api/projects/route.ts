@@ -18,7 +18,7 @@ export async function GET() {
         photo: true,
         createdAt: true,
         updatedAt: true,
-        Page: true,
+        About: true,
         Skills: {
           select: {
             id: true,

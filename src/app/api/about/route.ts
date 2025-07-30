@@ -2,18 +2,19 @@ import db from "@/lib/db";
 
 export async function GET() {
     try {
-        const pages = await db.page.findMany({
+        const about = await db.about.findMany({
             include: {
+                Skills: true,
                 sosmed: true,
-                skills: true,
                 projects: true,
-
+                workExperiences: true,
             },
         });
 
-        return Response.json(pages);
+        console.log("[ABOUT_GET]", about);
+        return Response.json(about);
     } catch (error) {
-        console.error("[PAGE_GET]", error);
+        console.error("[ABOUT_GET]", error);
         return new Response("Internal Error", { status: 500 });
     }
 }
