@@ -44,17 +44,17 @@ export async function PUT(
         const sosmed = JSON.parse(formData.get("sosmed") as string) as string[];
         const projects = JSON.parse(formData.get("projects") as string) as string[];
 
-        // Thumbnail logic
-        const oldThumbnail = formData.get("oldThumbnail") as string;
-        let thumbnailPath = oldThumbnail;
+        // Profile logic
+        const oldProfile = formData.get("oldProfile") as string;
+        let profilePath = oldProfile;
 
-        if (formData.has("thumbnail")) {
-            const file = formData.get("thumbnail") as File;
-            if (oldThumbnail) await safeDeleteFile(oldThumbnail);
-            thumbnailPath = await saveFile(file, "profile");
-        } else if (formData.get("thumbnailDeleted") === "true") {
-            if (oldThumbnail) await safeDeleteFile(oldThumbnail);
-            thumbnailPath = "";
+        if (formData.has("profile")) {
+            const file = formData.get("profile") as File;
+            if (oldProfile) await safeDeleteFile(oldProfile);
+            profilePath = await saveFile(file, "profile");
+        } else if (formData.get("profileDeleted") === "true") {
+            if (oldProfile) await safeDeleteFile(oldProfile);
+            profilePath = "";
         }
 
         // Update database
@@ -62,7 +62,7 @@ export async function PUT(
             name,
             jobTitle,
             introduction,
-            profilePicture: thumbnailPath,
+            profilePicture: profilePath,
             Skills: { set: skillId.map((id: string) => ({ id })) },
             sosmed: { set: sosmed.map((id: string) => ({ id })) },
             projects: { set: projects.map((id: string) => ({ id })) }
@@ -82,7 +82,7 @@ export async function PUT(
 
         return Response.json(about);
     } catch (error) {
-        console.log('[PROJECT_UPDATE]', error);
+        console.log('[ABOUT_UPDATE]', error);
         return new Response("Internal error", { status: 500 });
     }
 }

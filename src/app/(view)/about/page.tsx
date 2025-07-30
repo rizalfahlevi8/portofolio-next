@@ -32,9 +32,9 @@ export default function About() {
 
     const handleUpdateAbout = async (aboutId: string, updateData: {
         data: AboutFormValues;
-        thumbnailFile?: File | null;
-        thumbnailDeleted?: boolean;
-        oldThumbnail?: string;
+        profileFile?: File | null;
+        profileDeleted?: boolean;
+        oldProfile?: string;
     }) => {
         setUpdatingId(aboutId);
         try {

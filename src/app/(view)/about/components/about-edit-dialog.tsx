@@ -21,8 +21,8 @@ interface EditAboutDialogProps {
     about: About;
     onUpdate: (projectId: string, updateData: {
         data: AboutFormValues;
-        thumbnailFile?: File | null;
-        thumbnailDeleted?: boolean;
+        profileFile?: File | null;
+        profileDeleted?: boolean;
         oldThumbnail?: string;
     }) => Promise<void>;
     isUpdating?: boolean;
@@ -36,13 +36,13 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
     const { sosmed, isLoading: isLoadingSosmed, fetchSosmed } = useSosmedManager();
     const { project, isLoading: isLoadingProjects, fetchProjects } = useProjectManager();
 
-    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-    const [thumbnailDeleted, setThumbnailDeleted] = useState<boolean>(false);
-    const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+    const [profileFile, setProfileFile] = useState<File | null>(null);
+    const [profileDeleted, setProfileDeleted] = useState<boolean>(false);
+    const [profilePreview, setProfilePreview] = useState<string>("");
 
-    const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+    const [isUploadingProfile, setIsUploadingProfile] = useState(false);
 
-    const thumbnailInputRef = useRef<HTMLInputElement>(null);
+    const profileInputRef = useRef<HTMLInputElement>(null);
 
     const editForm = useForm<AboutFormValues>({
         resolver: zodResolver(aboutSchema),
@@ -70,51 +70,51 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
         }
     }, [isOpen, fetchSkills, fetchSosmed, fetchProjects]);
 
-    // Handle thumbnail file change
-    const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Handle profile file change
+    const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setThumbnailFile(file);
+            setProfileFile(file);
             const previewUrl = URL.createObjectURL(file);
-            setThumbnailPreview(previewUrl);
-            setThumbnailDeleted(false);
+            setProfilePreview(previewUrl);
+            setProfileDeleted(false);
         }
     };
 
-    // Remove thumbnail (new file)
-    const removeThumbnail = () => {
-        if (thumbnailPreview) {
-            URL.revokeObjectURL(thumbnailPreview);
+    // Remove profile (new file)
+    const removeProfile = () => {
+        if (profilePreview) {
+            URL.revokeObjectURL(profilePreview);
         }
-        setThumbnailFile(null);
-        setThumbnailPreview("");
-        if (thumbnailInputRef.current) {
-            thumbnailInputRef.current.value = "";
+        setProfileFile(null);
+        setProfilePreview("");
+        if (profileInputRef.current) {
+            profileInputRef.current.value = "";
         }
     };
 
-    // Remove existing thumbnail
-    const removeExistingThumbnail = () => {
-        setThumbnailDeleted(true);
+    // Remove existing profile
+    const removeExistingProfile = () => {
+        setProfileDeleted(true);
     };
 
-    // Restore existing thumbnail
-    const restoreExistingThumbnail = () => {
-        setThumbnailDeleted(false);
+    // Restore existing profile
+    const restoreExistingProfile = () => {
+        setProfileDeleted(false);
     };
 
     const handleUpdate = async (data: AboutFormValues) => {
         try {
-            setIsUploadingThumbnail(true);
+            setIsUploadingProfile(true);
             await onUpdate(about.id, {
                 data,
-                thumbnailFile,
-                thumbnailDeleted,
+                profileFile,
+                profileDeleted,
                 oldThumbnail: about.profilePicture || ""
             });
 
             setIsOpen(false);
-            setIsUploadingThumbnail(false);
+            setIsUploadingProfile(false);
         } catch (error) {
             console.error("Error in handleUpdate:", error);
         }
@@ -155,7 +155,7 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                     </FormLabel>
                                     <div className="mt-2 space-y-4">
                                         {/* Current Photo Profile */}
-                                        {about.profilePicture && !thumbnailFile && !thumbnailDeleted && (
+                                        {about.profilePicture && !profileFile && !profileDeleted && (
                                             <div>
                                                 <p className="text-sm text-gray-600 mb-2">Current photo profile:</p>
                                                 <div className="relative inline-block">
@@ -171,7 +171,7 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                                         variant="destructive"
                                                         size="icon"
                                                         className="absolute -top-2 -right-2 h-6 w-6"
-                                                        onClick={removeExistingThumbnail}
+                                                        onClick={removeExistingProfile}
                                                         disabled={isUpdating}
                                                     >
                                                         <X className="h-3 w-3" />
@@ -181,7 +181,7 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                         )}
 
                                         {/* Deleted thumbnail message */}
-                                        {thumbnailDeleted && !thumbnailFile && (
+                                        {profileDeleted && !profileFile && (
                                             <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-sm text-red-800">
@@ -191,7 +191,7 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                                         type="button"
                                                         variant="outline"
                                                         size="sm"
-                                                        onClick={restoreExistingThumbnail}
+                                                        onClick={restoreExistingProfile}
                                                         disabled={isUpdating}
                                                     >
                                                         Restore
@@ -201,12 +201,12 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                         )}
 
                                         {/* New Photo Profile Preview */}
-                                        {thumbnailPreview && (
+                                        {profilePreview && (
                                             <div>
                                                 <p className="text-sm text-gray-600 mb-2">New photo profile:</p>
                                                 <div className="relative inline-block">
                                                     <NextImage
-                                                        src={thumbnailPreview}
+                                                        src={profilePreview}
                                                         alt="New photo profile preview"
                                                         width={128}
                                                         height={128}
@@ -217,7 +217,7 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                                         variant="destructive"
                                                         size="icon"
                                                         className="absolute -top-2 -right-2 h-6 w-6"
-                                                        onClick={removeThumbnail}
+                                                        onClick={removeProfile}
                                                         disabled={isUpdating}
                                                     >
                                                         <X className="h-3 w-3" />
@@ -229,33 +229,33 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                         {/* Upload Button */}
                                         <div className="flex items-center gap-4">
                                             <input
-                                                ref={thumbnailInputRef}
+                                                ref={profileInputRef}
                                                 type="file"
                                                 accept="image/*"
-                                                onChange={handleThumbnailChange}
+                                                onChange={handleProfileChange}
                                                 className="hidden"
                                                 disabled={isUpdating}
                                             />
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                onClick={() => thumbnailInputRef.current?.click()}
-                                                disabled={isUpdating || isUploadingThumbnail}
+                                                onClick={() => profileInputRef.current?.click()}
+                                                disabled={isUpdating || isUploadingProfile}
                                                 className="flex items-center gap-2"
                                             >
                                                 <Upload className="h-4 w-4" />
-                                                {isUploadingThumbnail ? "Uploading..." :
-                                                    about.profilePicture && !thumbnailDeleted ? "Change Photo Profile" : "Upload Photo Profile"}
+                                                {isUploadingProfile ? "Uploading..." :
+                                                    about.profilePicture && !profileDeleted ? "Change Photo Profile" : "Upload Photo Profile"}
                                             </Button>
-                                            {thumbnailFile && (
+                                            {profileFile && (
                                                 <span className="text-sm text-gray-600">
-                                                    {thumbnailFile.name}
+                                                    {profileFile.name}
                                                 </span>
                                             )}
                                         </div>
 
                                         {/* No photo profile option */}
-                                        {!about.profilePicture && !thumbnailFile && (
+                                        {!about.profilePicture && !profileFile && (
                                             <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
                                                 <span className="text-sm text-gray-600">
                                                     No photo profile selected. This project will display without a photo profile.
@@ -477,12 +477,12 @@ export function EditAboutDialog({ about, onUpdate, isUpdating = false }: EditAbo
                                     <Button
                                         type="submit"
                                         className="flex-1"
-                                        disabled={isUpdating || isUploadingThumbnail || thumbnailDeleted }
+                                        disabled={isUpdating || isUploadingProfile || profileDeleted}
                                     >
-                                        {isUpdating || isUploadingThumbnail ? (
+                                        {isUpdating || isUploadingProfile ? (
                                             <>
                                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                {isUploadingThumbnail ? "Uploading Thumbnail..." : "Mengupdate..."}
+                                                {isUploadingProfile ? "Uploading Photo Profile..." : "Mengupdate..."}
                                             </>
                                         ) : (
                                             <>

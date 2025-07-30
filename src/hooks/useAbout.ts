@@ -6,20 +6,20 @@ import toast from "react-hot-toast";
 interface UseAboutManagerReturn {
     about: About[];
     isLoading: boolean;
-    isUploadingThumbnail: boolean;
+    isUploadingProfile: boolean;
     fetchAbout: () => Promise<void>;
     updateAbout: (aboutId: string, updateData: {
         data: AboutFormValues;
-        thumbnailFile?: File | null;
-        thumbnailDeleted?: boolean;
-        oldThumbnail?: string;
+        profileFile?: File | null;
+        profileDeleted?: boolean;
+        oldProfile?: string;
     }) => Promise<void>;
 }
 
 export function useAboutManager(): UseAboutManagerReturn {
     const [about, setAbout] = useState<About[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+    const [isUploadingProfile, setIsUploadingProfile] = useState(false);
 
     const fetchAbout = useCallback(async () => {
         try {
@@ -43,15 +43,15 @@ export function useAboutManager(): UseAboutManagerReturn {
     const updateAbout = useCallback(
         async (aboutId: string, updateData: {
             data: AboutFormValues;
-            thumbnailFile?: File | null;
-            thumbnailDeleted?: boolean;
-            oldThumbnail?: string;
+            profileFile?: File | null;
+            profileDeleted?: boolean;
+            oldProfile?: string;
         }) => {
             const { 
                 data, 
-                thumbnailFile, 
-                thumbnailDeleted = false,
-                oldThumbnail = ""
+                profileFile, 
+                profileDeleted = false,
+                oldProfile = ""
             } = updateData;
 
             const aboutToUpdate = about.find(a => a.id === aboutId);
@@ -71,14 +71,14 @@ export function useAboutManager(): UseAboutManagerReturn {
                 formData.append("projects", JSON.stringify(data.projects ?? []));
 
                 // Kirim info thumbnail lama ke backend
-                formData.append("oldThumbnail", oldThumbnail || aboutToUpdate.profilePicture || "");
+                formData.append("oldProfile", oldProfile || aboutToUpdate.profilePicture || "");
 
                 // Handle thumbnail baru/hapus
-                if (thumbnailFile) {
-                    setIsUploadingThumbnail(true);
-                    formData.append("thumbnail", thumbnailFile); // file baru
-                } else if (thumbnailDeleted && (oldThumbnail || aboutToUpdate.profilePicture)) {
-                    formData.append("thumbnailDeleted", "true"); // flag hapus
+                if (profileFile) {
+                    setIsUploadingProfile(true);
+                    formData.append("profile", profileFile); // file baru
+                } else if (profileDeleted && (oldProfile || aboutToUpdate.profilePicture)) {
+                    formData.append("profileDeleted", "true"); // flag hapus
                 }
                 // Kalau undefined, berarti tetap
 
@@ -114,7 +114,7 @@ export function useAboutManager(): UseAboutManagerReturn {
                 toast.error("Gagal mengupdate about. Silakan coba lagi.");
                 throw error;
             } finally {
-                setIsUploadingThumbnail(false);
+                setIsUploadingProfile(false);
             }
         },
         [about, fetchAbout]
@@ -123,7 +123,7 @@ export function useAboutManager(): UseAboutManagerReturn {
     return {
         about,
         isLoading,
-        isUploadingThumbnail,
+        isUploadingProfile,
         fetchAbout,
         updateAbout
     };
