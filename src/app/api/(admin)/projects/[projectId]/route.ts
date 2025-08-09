@@ -1,6 +1,6 @@
 import { Prisma } from "@/generated/prisma";
 import db from "@/lib/db";
-import { safeDeleteFile, saveFile } from "@/lib/utils";
+import { safeDeleteFile, saveFile } from "@/lib/server-utils";
 import { NextRequest } from "next/server";
 
 export async function DELETE(

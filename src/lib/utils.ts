@@ -1,7 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import path from "path";
-import { mkdir, writeFile, unlink } from "fs/promises";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -19,28 +17,22 @@ export const extractUsernameFromUrl = (url: string | undefined) => {
   }
 };
 
-// Function to save a file to the server
-export async function saveFile(file: File, folder = "uploads") {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const uploadDir = path.join(process.cwd(), "public", folder);
-    await mkdir(uploadDir, { recursive: true }); // <--- FIX: Pastikan folder ada!
-    const filename = `${Date.now()}-${file.name}`;
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
-    return `/${folder}/${filename}`;
+// Client-side utility functions
+export function formatDate(date: Date) {
+  return date.toLocaleDateString();
 }
 
-// Function to safely delete a file
-export async function safeDeleteFile(filePath: string) {
-    if (!filePath) return;
-    const fullPath = path.join(process.cwd(), "public", filePath.startsWith("/") ? filePath : `/${filePath}`);
-    try {
-        await unlink(fullPath);
-    } catch (err) {
-        if ((err as NodeJS.ErrnoException)?.code !== "ENOENT") {
-            console.log(`[FILE_DELETE_ERROR]`, err);
-        }
-    }
+export function formatFileSize(bytes: number) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+export function generateSlug(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w ]+/g, '')
+    .replace(/ +/g, '-');
+}
