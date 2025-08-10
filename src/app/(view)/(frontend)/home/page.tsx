@@ -3,6 +3,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useHomeManager } from "@/hooks/frontend/useHome";
 import { useEffect } from "react";
+import { Header } from "./sections/Header";
+import { HeroSection } from "./sections/Hero";
 
 export default function Home() {
   const { home, isLoading: isLoadingHome, fetchHome } = useHomeManager();
@@ -40,13 +42,13 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div>
       {isLoadingHome ? (
         <p>Loading...</p>
       ) : homeData ? (
         <div>
-          <h1 className="text-2xl font-bold">{homeData.name}</h1>
-          <p>{homeData.jobTitle}</p>
+          <Header />
+          <HeroSection home={homeData} />
         </div>
       ) : (
         <p>No home data available.</p>
