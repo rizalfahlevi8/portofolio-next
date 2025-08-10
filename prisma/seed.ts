@@ -58,8 +58,8 @@ async function main() {
       technology: ["React", "Typescript", "TailwindCSS"],
       githubUrl: "https://github.com/example/portfolio",
       liveUrl: "https://portfolio.example.com",
-      thumbnail: "/thumbnails/2.jpg",
-      photo: ["/photos/1.jpg"],
+      thumbnail: "/thumbnails/2.png",
+      photo: ["/photos/2.jpg"],
       Skills: {
         connect: [{ id: skillReact.id }, { id: skillNode.id }],
       },
@@ -77,7 +77,7 @@ async function main() {
       technology: ["React", "Typescript", "TailwindCSS"],
       githubUrl: "https://github.com/example/portfolio",
       liveUrl: "https://portfolio.example.com",
-      thumbnail: "/thumbnails/2.jpg",
+      thumbnail: "/thumbnails/1.png",
       photo: ["/photos/1.jpg"],
       Skills: {
         connect: [{ id: skillReact.id }],

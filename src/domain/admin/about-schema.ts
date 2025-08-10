@@ -1,8 +1,8 @@
 import * as z from "zod"
-import { Project } from "@/generated/prisma";
 import { Skill } from "./skill-schema";
 import { Sosmed } from "./sosmed-schema";
 import { WorkExperience } from "./workexperience-schema";
+import { Project } from "./project-schema";
 
 export interface About {
   id: string;

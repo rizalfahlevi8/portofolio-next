@@ -5,6 +5,7 @@ import { useHomeManager } from "@/hooks/frontend/useHome";
 import { useEffect } from "react";
 import { Header } from "./sections/Header";
 import { HeroSection } from "./sections/Hero";
+import { ProjectsSection } from "./sections/projects";
 
 export default function Home() {
   const { home, isLoading: isLoadingHome, fetchHome } = useHomeManager();
@@ -49,6 +50,7 @@ export default function Home() {
         <div>
           <Header />
           <HeroSection home={homeData} />
+          <ProjectsSection home={homeData} />
         </div>
       ) : (
         <p>No home data available.</p>
