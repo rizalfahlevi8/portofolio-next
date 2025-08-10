@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { Header } from "./sections/Header";
 import { HeroSection } from "./sections/Hero";
 import { ProjectsSection } from "./sections/projects";
+import { TapeSection } from "./sections/Tape";
+import { WorkExperienceSection } from "./sections/WorkExperience";
 
 export default function Home() {
   const { home, isLoading: isLoadingHome, fetchHome } = useHomeManager();
@@ -51,6 +53,9 @@ export default function Home() {
           <Header />
           <HeroSection home={homeData} />
           <ProjectsSection home={homeData} />
+          <TapeSection rotation="-rotate-3" animation="animate-move-left" />
+          <WorkExperienceSection home={homeData} />
+          <TapeSection rotation="rotate-3" animation="animate-move-right" />
         </div>
       ) : (
         <p>No home data available.</p>
