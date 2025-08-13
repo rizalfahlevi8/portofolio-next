@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 
 export const Card = ({className, children, ...other} : ComponentPropsWithRef<'div'>) => {
     return (
-        <div className={twMerge("bg-white rounded-3xl lg:mx-72 relative z-0 overflow-hidden after:z-10 after:content-[''] after:absolute after:inset-0 after:outline-2 after:outline after:-outline-offset-2 after:rounded-3xl after: outline-black/20 after:pointer-events-none", className)}{...other}>
+        <div className={twMerge("bg-white rounded-3xl relative z-0 overflow-hidden after:z-10 after:content-[''] after:absolute after:inset-0 after:outline-2 after:outline after:-outline-offset-2 after:rounded-3xl after: outline-black/20 after:pointer-events-none", className)}{...other}>
             <div className="absolute inset-0 -z-10 opacity-5" style={{
                 backgroundImage: `url(${grainImage.src})`,
             }}>

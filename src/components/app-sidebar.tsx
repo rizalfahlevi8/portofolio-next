@@ -43,27 +43,27 @@ const data = {
   resume: [
     {
       name: "About",
-      url: "/about",
+      url: "/admin/about",
       icon: User,
     },
     {
       name: "Skill",
-      url: "/skill",
+      url: "/admin/skill",
       icon: Award,
     },
     {
       name: "Social Media",
-      url: "/sosmed",
+      url: "/admin/sosmed",
       icon: Podcast,
     },
     {
       name: "Work Experience",
-      url: "/work-experience",
+      url: "/admin/work-experience",
       icon: BriefcaseBusiness,
     },
     {
       name: "Project",
-      url: "/project",
+      url: "/admin/project",
       icon: FilePen,
     },
   ],

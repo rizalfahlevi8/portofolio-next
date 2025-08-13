@@ -143,7 +143,7 @@
 
 @keyframes move-left {
   0% {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
   100% {
     transform: translateX(-50%);
@@ -155,18 +155,22 @@
     transform: translateX(-50%);
   }
   100% {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
 }
 
-@layer utilities {
-  .animate-move-left {
-    animation: move-left 400s linear infinite;
-  }
-  .animate-move-right {
-    animation: move-right 400s linear infinite;
-  }
-  .animate-ping-large {
-    animation: ping-large 1.5s cubic-bezier(0,0,0.2,1) infinite;
-  }
+.animate-move-left {
+  animation-name: move-left;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.animate-move-right {
+  animation-name: move-right;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.animate-ping-large {
+  animation: ping-large 1.5s cubic-bezier(0,0,0.2,1) infinite;
 }

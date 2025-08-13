@@ -36,3 +36,8 @@ export function generateSlug(text: string) {
     .replace(/[^\w ]+/g, '')
     .replace(/ +/g, '-');
 }
+
+export const truncateText = (text: string, maxLength: number = 150) => {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + "...";
+};

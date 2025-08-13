@@ -16,7 +16,7 @@ import { Plus, Code, ExternalLink, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useSkillsManager } from "@/hooks/admin/useSkill";
-import { SkillEditDropdown } from "@/app/(view)/(admin)/skill/components/skill-edit-dropdown";
+import { SkillEditDropdown } from "@/app/(view)/admin/skill/components/skill-edit-dropdown";
 
 export default function Skill() {
     const { skills, isLoading: isLoadingSkills, addSkill, updateSkill, deleteSkill, fetchSkills } = useSkillsManager();

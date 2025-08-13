@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { useHomeManager } from "@/hooks/frontend/useHome";
 import { useEffect } from "react";
 import { Header } from "./sections/Header";
@@ -8,6 +7,10 @@ import { HeroSection } from "./sections/Hero";
 import { ProjectsSection } from "./sections/projects";
 import { TapeSection } from "./sections/Tape";
 import { WorkExperienceSection } from "./sections/WorkExperience";
+import { AboutSection } from "./sections/About";
+import { ContactSection } from "./sections/Contact";
+import { FooterSection } from "./sections/Footer";
+import { HomeNoData } from "./sections/NoData";
 
 export default function Home() {
   const { home, isLoading: isLoadingHome, fetchHome } = useHomeManager();
@@ -30,36 +33,21 @@ export default function Home() {
     );
   }
 
-  if (!home) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-8 text-center">
-            <div className="text-4xl mb-4">🔍</div>
-            <h2 className="text-2xl font-bold mb-2">No Data Found</h2>
-            <p className="text-muted-foreground">Portfolio data could not be loaded.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  if (!home || !homeData) {
+    return <HomeNoData onReload={fetchHome} />;
   }
 
   return (
     <div>
-      {isLoadingHome ? (
-        <p>Loading...</p>
-      ) : homeData ? (
-        <div>
-          <Header />
-          <HeroSection home={homeData} />
-          <ProjectsSection home={homeData} />
-          <TapeSection rotation="-rotate-3" animation="animate-move-left" />
-          <WorkExperienceSection home={homeData} />
-          <TapeSection rotation="rotate-3" animation="animate-move-right" />
-        </div>
-      ) : (
-        <p>No home data available.</p>
-      )}
+      <Header />
+      <HeroSection home={homeData} />
+      <ProjectsSection home={homeData} />
+      <TapeSection rotation="-rotate-3" animation="animate-move-left [animation-duration:400s]" />
+      <WorkExperienceSection home={homeData} />
+      <TapeSection rotation="rotate-3" animation="animate-move-right [animation-duration:400s]" />
+      <AboutSection home={homeData} />
+      <ContactSection />
+      <FooterSection home={homeData} />
     </div>
-  )
+  );
 }
