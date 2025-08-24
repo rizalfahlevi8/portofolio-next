@@ -24,7 +24,7 @@ async function main() {
       name: "Muhammad Rizal Fahlevi",
       jobTitle: "Software Engineer",
       introduction: "Saya adalah seorang software engineer yang suka membangun aplikasi modern.",
-      profilePicture: "/profile/default_profile.png",
+      profilePicture: "/profile/default.png",
       createdAt: new Date(),
       updatedAt: new Date(),
       Skills: {
@@ -58,29 +58,10 @@ async function main() {
       technology: ["React", "Typescript", "TailwindCSS"],
       githubUrl: "https://github.com/example/portfolio",
       liveUrl: "https://portfolio.example.com",
-      thumbnail: "/thumbnails/2.png",
-      photo: ["/photos/2.jpg"],
+      thumbnail: "/thumbnails/default.png",
+      photo: ["/photos/default.jpg"],
       Skills: {
         connect: [{ id: skillReact.id }, { id: skillNode.id }],
-      },
-      About: {
-        connect: { id: about.id },
-      },
-    },
-  })
-
-  await prisma.project.create({
-    data: {
-      title: "Portfolio Mobile",
-      description: "Mobile untuk menampilkan portofolio saya.",
-      feature: ["Profile", "Projects", "Contact"],
-      technology: ["React", "Typescript", "TailwindCSS"],
-      githubUrl: "https://github.com/example/portfolio",
-      liveUrl: "https://portfolio.example.com",
-      thumbnail: "/thumbnails/1.png",
-      photo: ["/photos/1.jpg"],
-      Skills: {
-        connect: [{ id: skillReact.id }],
       },
       About: {
         connect: { id: about.id },

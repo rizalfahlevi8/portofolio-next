@@ -2,15 +2,22 @@ import { About } from "@/domain/admin/about-schema";
 import { SectionHeader } from "../components/SectionHeader"
 import { Card } from "../components/Card";
 import grainImage from "@/assets/images/grain.jpg";
-import { ArrowUpRightIcon, CheckCircleIcon } from "lucide-react";
+import { ArrowUpRightIcon, CheckCircleIcon, ImageOffIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 
 interface ProjectSectionProps {
     home: About;
 }
 
 export const ProjectsSection = ({ home }: ProjectSectionProps) => {
+    const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
+
+    const handleImageError = (projectId: string) => {
+        setImageErrors(prev => ({ ...prev, [projectId]: true }));
+    };
+
     return <section className="pb-16 lg:py-24">
         <div className="container">
             <SectionHeader eyebrow="Real-world Results" title="Featured Projects" description="See how I transformed concepts into engaging digital experiences." />
@@ -72,12 +79,19 @@ export const ProjectsSection = ({ home }: ProjectSectionProps) => {
                             </div>
                             <div className="relative mt-8 lg:mt-0 lg:-mr-20 lg:-mb-16">
                                 <div className="relative w-full h-[250px] md:h-[300px] lg:h-[500px] lg:w-[120%]">
-                                    <Image
-                                        src={project.thumbnail}
-                                        alt={project.title}
-                                        fill
-                                        className="object-cover object-top lg:object-bottom-left rounded-lg lg:rounded-none"
-                                    />
+                                    {imageErrors[project.id] ? (
+                                        <div className="w-full h-full bg-gray-200 rounded-lg lg:rounded-none flex items-center justify-center">
+                                            <ImageOffIcon className="w-12 h-12 text-gray-400" />
+                                        </div>
+                                    ) : (
+                                        <Image
+                                            src={project.thumbnail}
+                                            alt={project.title}
+                                            fill
+                                            className="object-cover object-top lg:object-bottom-left rounded-lg lg:rounded-none"
+                                            onError={() => handleImageError(project.id)}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
