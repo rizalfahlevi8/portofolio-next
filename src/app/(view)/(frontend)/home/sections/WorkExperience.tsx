@@ -107,7 +107,7 @@ export const WorkExperienceSection = ({ home }: WorkExperienceSectionProps) => {
                                     }`} />
 
                                 {/* Enhanced Card with hover effects */}
-                                <Card className={`lg:ml-16 border-2 transition-all duration-500 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 group-hover:-translate-y-1 ${visibleItems.has(workIndex)
+                                <Card className={`lg:ml-16 mx-5 md:mx-auto border-2 transition-all duration-500 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 group-hover:-translate-y-1 ${visibleItems.has(workIndex)
                                         ? 'border-border shadow-md'
                                         : 'border-border/50'
                                     }`}>

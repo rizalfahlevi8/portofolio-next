@@ -36,7 +36,7 @@ export const FooterSection = ({ home }: FooterSectionProps) => {
                               rel="noopener noreferrer"
                               style={{ zIndex: 100, position: "relative", pointerEvents: "auto" }}
                             >
-                                <i className={`fa-brands fa-user text-2xl`} />
+                                <i className={`fa-solid fa-gear text-2xl`} />
                                 <span className="font-semibold">Dashboard</span>
                                 <ArrowUpRightIcon className="size-4" />
                             </a>

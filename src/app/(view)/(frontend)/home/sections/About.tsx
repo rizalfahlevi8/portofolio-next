@@ -47,7 +47,7 @@ export const AboutSection = ({ home }: AboutSectionProps) => {
         <div className="py-20 lg:py-28">
             <div className="container">
                 <SectionHeader eyebrow="About Me" title="A Glimpse Into My World" description="Learn more about who I am, what I do, and what inspires me." />
-                <div className="mt-20 flex flex-col gap-8 mx-30 md:mx-10 lg:mx-60">
+                <div className="mt-20 flex flex-col gap-8 mx-10 md:mx-10 lg:mx-60">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-5 lg:grid-cols-3">
                         <Card className="md:col-span-2 lg:col-span-1 h-[320px] relative overflow-hidden group">
                             <div className="absolute inset-0">

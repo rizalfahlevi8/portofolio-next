@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const ContactSection = () => {
   return (
-    <div className='mx-30 md:mx-15 lg:mx-80 py-16 pt-12 lg:py-24 lg:pt-20'>
+    <div className='mx-10 md:mx-15 lg:mx-105 py-16 pt-12 lg:py-24 lg:pt-20'>
       <div className='container'>
         <div className='bg-gradient-white text-black py-8 px-10 rounded-3xl text-center md:text-left relative overflow-hidden z-0 border-1 border-gray-950'>
           <div className='absolute inset-0 opacity-5 -z-10' style={{

@@ -25,7 +25,7 @@ export const ProjectsSection = ({ home }: ProjectSectionProps) => {
                 {home.projects?.map((project, projectIndex) => (
                     <Card
                         key={project.id}
-                        className="lg:mx-30 xl:mx-72 px-8 pt-8 pb-0 md:pt-12 md:px-10 lg:pt-16 lg:px-20 lg:pb-0 sticky overflow-hidden"
+                        className="xl:mx-60 lg:mx-30 md:mx-20 mx-5 px-8 pt-8 pb-0 md:pt-12 md:px-8 lg:pt-16 lg:px-10 lg:pb-0 sticky overflow-hidden"
                         style={{
                             top: `calc(64px + ${projectIndex * 40}px`,
                         }}
