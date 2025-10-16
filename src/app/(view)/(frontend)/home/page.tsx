@@ -40,14 +40,39 @@ export default function Home() {
   return (
     <div>
       <Header />
-      <HeroSection home={homeData} />
-      <ProjectsSection home={homeData} />
-      <TapeSection rotation="-rotate-3" animation="animate-move-left [animation-duration:400s]" />
-      <WorkExperienceSection home={homeData} />
-      <TapeSection rotation="rotate-3" animation="animate-move-right [animation-duration:400s]" />
-      <AboutSection home={homeData} />
-      <ContactSection />
-      <FooterSection home={homeData} />
+
+      {/* Each section wrapped with an id that matches Header nav links */}
+      <section id="hero">
+        <HeroSection home={homeData} />
+      </section>
+
+      <section id="projects">
+        <ProjectsSection home={homeData} />
+      </section>
+
+      <section aria-hidden className="min-h-[120px]">
+        <TapeSection rotation="-rotate-3" animation="animate-move-left [animation-duration:400s]" />
+      </section>
+
+      <section id="work-experience">
+        <WorkExperienceSection home={homeData} />
+      </section>
+
+      <section aria-hidden className="min-h-[120px]">
+        <TapeSection rotation="rotate-3" animation="animate-move-right [animation-duration:400s]" />
+      </section>
+
+      <section id="about">
+        <AboutSection home={homeData} />
+      </section>
+
+      <section id="contact">
+        <ContactSection />
+      </section>
+
+      <section aria-label="footer">
+        <FooterSection home={homeData} />
+      </section>
     </div>
   );
 }

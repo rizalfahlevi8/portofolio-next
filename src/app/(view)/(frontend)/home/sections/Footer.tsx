@@ -13,8 +13,8 @@ export const FooterSection = ({ home }: FooterSectionProps) => {
             {/* <div className="absolute ... z-0"></div> */}
             <div className="container">
                 <div className="border-t border-black/15 py-6 text-sm flex flex-col md:flex-row md:justify-between items-center gap-8">
-                    <div className="text-black/40">&copy; {currentYear}. All rights reserved.</div>
-                    <nav className="flex flex-col md:flex-row items-center gap-8">
+                    <div className="ml-5 text-black/40">&copy; {currentYear}. All rights reserved.</div>
+                    <nav className="mr-5 flex flex-col md:flex-row items-center gap-8">
                         {home.sosmed?.map(sosmed => (
                             <a
                               href={sosmed.url}
