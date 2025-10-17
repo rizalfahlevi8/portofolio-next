@@ -1,7 +1,6 @@
 "use client";
 
 import { useHomeManager } from "@/hooks/frontend/useHome";
-import { useEffect } from "react";
 import { Header } from "./sections/Header";
 import { HeroSection } from "./sections/Hero";
 import { ProjectsSection } from "./sections/projects";
@@ -11,37 +10,38 @@ import { AboutSection } from "./sections/About";
 import { ContactSection } from "./sections/Contact";
 import { FooterSection } from "./sections/Footer";
 import { HomeNoData } from "./sections/NoData";
+import { Suspense } from "react";
 
-export default function Home() {
-  const { home, isLoading: isLoadingHome, fetchHome } = useHomeManager();
+// Loading component lebih ringan
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900"></div>
+        <p className="text-gray-600 text-sm">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
-  useEffect(() => {
-    fetchHome();
-  }, [fetchHome]);
+function HomeContent() {
+  const { home, isLoading, error, mutate } = useHomeManager();
 
   const validHome = home?.filter((item) => item && item.id) || [];
   const homeData = validHome[0];
 
-  if (isLoadingHome) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-          <p className="text-muted-foreground animate-pulse">Loading portfolio...</p>
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
-  if (!home || !homeData) {
-    return <HomeNoData onReload={fetchHome} />;
+  if (error || !homeData) {
+    return <HomeNoData onReload={() => mutate()} />;
   }
 
   return (
-    <div>
+    <>
       <Header />
 
-      {/* Each section wrapped with an id that matches Header nav links */}
       <section id="hero">
         <HeroSection home={homeData} />
       </section>
@@ -73,6 +73,14 @@ export default function Home() {
       <section aria-label="footer">
         <FooterSection home={homeData} />
       </section>
-    </div>
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <HomeContent />
+    </Suspense>
   );
 }

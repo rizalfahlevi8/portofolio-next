@@ -1,12 +1,23 @@
 import { Inter, Calistoga } from "next/font/google";
 import "../../globals.css";
 import { twMerge } from "tailwind-merge";
+import { SWRProviders } from "../../../providers/swr-provider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ 
+    subsets: ["latin"], 
+    variable: "--font-sans", 
+    display: "swap",
+    preload: true,
+    fallback: ['system-ui', 'arial']
+});
+
 const calistoga = Calistoga({
     subsets: ["latin"],
     weight: "400",
     variable: "--font-serif",
+    display: "swap",
+    preload: true,
+    fallback: ['Georgia', 'serif']
 });
 
 export default function RootLayout({
@@ -15,6 +26,14 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className={twMerge(inter.variable, calistoga.variable, "bg-gray-50 text-black antialiased font-sans")}>{children}</div>
+        <div className={twMerge(
+            inter.variable, 
+            calistoga.variable, 
+            "bg-gray-50 text-black antialiased font-sans"
+        )}>
+            <SWRProviders>
+                {children}
+            </SWRProviders>
+        </div>
     );
 }
