@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type NavItem = {
   id: string;
@@ -15,43 +15,82 @@ export const Header: React.FC = () => {
   ];
 
   const [active, setActive] = useState<string>("hero");
+  const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Observe all sections with matching IDs
-    const sections = navItems
-      .map((n) => document.getElementById(n.id))
-      .filter(Boolean) as HTMLElement[];
+    // Helper to compute active section by distance from top (account for header height)
+    const getSections = () =>
+      navItems.map((n) => document.getElementById(n.id)).filter(Boolean) as HTMLElement[];
 
-    if (!sections.length) return;
+    let ticking = false;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Pick the visible entry with the largest intersection ratio
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    const updateActiveByScroll = () => {
+      const sections = getSections();
+      if (!sections.length) return;
 
-        if (visible) {
-          setActive(visible.target.id);
-        } else {
-          // If none intersecting, find the section closest to top
-          const sortedByTop = sections
-            .map((el) => ({ id: el.id, top: Math.abs(el.getBoundingClientRect().top) }))
-            .sort((a, b) => a.top - b.top);
-          if (sortedByTop[0]) setActive(sortedByTop[0].id);
+      const headerHeight = navRef.current?.getBoundingClientRect().height ?? 0;
+      const offset = headerHeight + 16; // small offset so the section just under the header is preferred
+
+      let bestId = sections[0].id;
+      let bestDistance = Infinity;
+
+      sections.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const distance = Math.abs(rect.top - offset);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestId = el.id;
         }
-      },
-      {
-        // adjust rootMargin so header height doesn't hide the target
-        root: null,
-        rootMargin: "-30% 0px -60% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
+      });
+
+      setActive((prev) => (prev !== bestId ? bestId : prev));
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateActiveByScroll();
+          ticking = false;
+        });
       }
-    );
+    };
 
-    sections.forEach((s) => observer.observe(s));
+    // initial set after a short delay to allow layout to stabilize
+    const initTimeout = setTimeout(updateActiveByScroll, 50);
 
-    return () => observer.disconnect();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    // listen custom nav activation events (dispatched from Hero button, etc.)
+    const onNavActivate = (e: Event) => {
+      try {
+        const custom = e as CustomEvent;
+        const id = custom?.detail?.id;
+        if (id && navItems.some((n) => n.id === id)) {
+          setActive(id);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    window.addEventListener("nav:activate", onNavActivate as EventListener);
+
+    // also observe DOM mutations (optional) - in case sections are added dynamically
+    const observer = new MutationObserver(() => {
+      updateActiveByScroll();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      clearTimeout(initTimeout);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("nav:activate", onNavActivate as EventListener);
+      observer.disconnect();
+    };
+    // navItems is static here so leaving dependency array empty is fine
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -66,7 +105,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center fixed w-full top-3 z-10 pointer-events-none">
+    <div className="flex justify-center items-center fixed w-full top-3 z-10 pointer-events-none" ref={navRef}>
       <nav className="pointer-events-auto flex gap-1 p-0.5 border border-black/15 rounded-full bg-black/10 backdrop-blur">
         {navItems.map((item) => {
           const isActive = active === item.id;
@@ -77,7 +116,6 @@ export const Header: React.FC = () => {
               onClick={(e) => handleClick(e, item.id)}
               aria-current={isActive ? "page" : undefined}
               className={
-                // keep your original classes; adjust active state styles here
                 `nav-item px-4 py-2 rounded-full transition-colors duration-150 ${
                   isActive
                     ? "bg-white text-gray-900 shadow-md"
