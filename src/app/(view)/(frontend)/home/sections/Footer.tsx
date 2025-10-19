@@ -1,5 +1,6 @@
 import { About } from "@/domain/admin/about-schema";
 import { ArrowUpRightIcon } from "lucide-react";
+import Link from "next/link";
 
 interface FooterSectionProps {
     home: About;
@@ -9,8 +10,6 @@ export const FooterSection = ({ home }: FooterSectionProps) => {
     const currentYear = new Date().getFullYear();
     return (
         <footer className="relative z-10 overflow-x-clip">
-            {/* Sementara hapus layer absolute */}
-            {/* <div className="absolute ... z-0"></div> */}
             <div className="container">
                 <div className="border-t border-black/15 py-6 text-sm flex flex-col md:flex-row md:justify-between items-center gap-8">
                     <div className="ml-5 text-black/40">&copy; {currentYear}. All rights reserved.</div>
@@ -19,7 +18,7 @@ export const FooterSection = ({ home }: FooterSectionProps) => {
                             <a
                               href={sosmed.url}
                               key={sosmed.id}
-                              className="inline-flex items-center gap-1.5"
+                              className="inline-flex items-center gap-1.5 hover:text-blue-600 transition-colors"
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{ zIndex: 100, position: "relative", pointerEvents: "auto" }}
@@ -29,17 +28,15 @@ export const FooterSection = ({ home }: FooterSectionProps) => {
                                 <ArrowUpRightIcon className="size-4" />
                             </a>
                         ))}
-                        <a
-                              href={"/admin/about"}
-                              className="inline-flex items-center gap-1.5"
-                              target="_blank"
-                              rel="noopener noreferrer"
+                        <Link
+                              href="/admin/about"
+                              className="inline-flex items-center gap-1.5 hover:text-blue-600 transition-colors"
                               style={{ zIndex: 100, position: "relative", pointerEvents: "auto" }}
                             >
-                                <i className={`fa-solid fa-gear text-2xl`} />
+                                <i className="fa-solid fa-gear text-2xl" />
                                 <span className="font-semibold">Dashboard</span>
                                 <ArrowUpRightIcon className="size-4" />
-                            </a>
+                            </Link>
                     </nav>
                 </div>
             </div>
