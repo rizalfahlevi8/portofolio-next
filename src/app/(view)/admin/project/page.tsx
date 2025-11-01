@@ -5,7 +5,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useProjectManager } from "@/hooks/admin/useProject";
 import {
   Code,
   Loader2,
@@ -21,16 +20,16 @@ import { useEffect, useState } from "react";
 import AddProjectDialog from "./components/project-add-dialog";
 import Image from "next/image";
 import { ProjectEditDropdown } from "./components/project-edit-dialog";
-import { ProjectFormValues } from "@/domain/admin/project-schema";
+import { ProjectFormValues } from "@/schema/project-schema";
+import { useProjectStore } from "@/store/project-store";
 
 export default function Project() {
-  const {
-    project,
-    isLoading: isLoadingProjects,
-    updateProject,
-    deleteProject,
-    fetchProjects,
-  } = useProjectManager();
+    const project = useProjectStore((state) => state.project);
+    const isLoadingProjects = useProjectStore((state) => state.isLoading);
+    const fetchProjects = useProjectStore((state) => state.fetchProjects);
+    const addProject = useProjectStore((state) => state.addProject);
+    const updateProject = useProjectStore((state) => state.updateProject);
+    const deleteProject = useProjectStore((state) => state.deleteProject);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { useAboutManager } from "@/hooks/admin/useAbout";
+import { useAboutStore } from "@/store/about-store";
 import { extractUsernameFromUrl } from "@/lib/utils";
 import {
   BriefcaseBusiness,
@@ -24,15 +24,16 @@ import {
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { EditAboutDialog } from "./components/about-edit-dialog";
-import { AboutFormValues } from "@/domain/admin/about-schema";
+import { AboutFormValues } from "@/schema/about-schema";
 
 export default function About() {
-  const {
-    about,
-    isLoading: isLoadingAbout,
-    updateAbout,
-    fetchAbout,
-  } = useAboutManager();
+  // Ambil state dan actions langsung dari Zustand store
+  const about = useAboutStore((state) => state.about);
+  const isLoadingAbout = useAboutStore((state) => state.isLoading);
+  const isUploadingProfile = useAboutStore((state) => state.isUploadingProfile);
+  const fetchAbout = useAboutStore((state) => state.fetchAbout);
+  const updateAbout = useAboutStore((state) => state.updateAbout);
+
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function About() {
             <EditAboutDialog
               about={user}
               onUpdate={handleUpdateAbout}
-              isUpdating={updatingId === user.id}
+              isUpdating={updatingId === user.id || isUploadingProfile}
             />
           )}
         </div>

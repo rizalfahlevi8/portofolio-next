@@ -10,22 +10,24 @@ export default function LoginPage() {
   const callbackUrl = searchParams.get("callbackUrl") || "/admin/about";
   const error = searchParams.get("error");
   const [isLoading, setIsLoading] = useState(false);
-  const [showError, setShowError] = useState(false);
+  
+  // Derive showError from the error parameter instead of managing separate state
+  const showError = error === "unauthorized";
 
   useEffect(() => {
     if (error === "unauthorized") {
-      setShowError(true);
-      // Hapus error dari URL setelah 5 detik
-      setTimeout(() => {
+      // Only handle the URL cleanup in the effect
+      const timeoutId = setTimeout(() => {
         router.replace("/login");
-        setShowError(false);
       }, 5000);
+      
+      // Cleanup timeout on unmount or when error changes
+      return () => clearTimeout(timeoutId);
     }
   }, [error, router]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
-    setShowError(false);
     try {
       await signIn("google", { callbackUrl });
     } catch (error) {

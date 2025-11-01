@@ -1,4 +1,4 @@
-import { About } from "@/domain/admin/about-schema";
+import { About } from "@/schema/about-schema";
 import { useState, useEffect } from "react";
 import { SectionHeader } from "../components/SectionHeader";
 import { Card } from "../components/Card";

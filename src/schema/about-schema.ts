@@ -5,7 +5,7 @@ import { WorkExperience } from "./workexperience-schema";
 import { Project } from "./project-schema";
 
 export interface About {
-  image: any;
+  image: string;
   id: string;
   name: string;
   jobTitle: string;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Skill, SkillFormValues, skillSchema } from "@/domain/admin/skill-schema";
+import { Skill, SkillFormValues, skillSchema } from "@/schema/skill-schema";
 import {
   DropdownMenu,
   DropdownMenuContent,

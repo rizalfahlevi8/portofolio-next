@@ -4,9 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ProjectFormValues, projectSchema } from "@/domain/admin/project-schema";
-import { useProjectManager } from "@/hooks/admin/useProject";
-import { useSkillsManager } from "@/hooks/admin/useSkill";
+import { ProjectFormValues, projectSchema } from "@/schema/project-schema";
+import { useProjectStore } from "@/store/project-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Save, X, Upload, Image } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
@@ -14,6 +13,7 @@ import { useForm } from "react-hook-form";
 import NextImage from "next/image";
 import ReactSelect from "react-select";
 import toast from "react-hot-toast";
+import { useSkillStore } from "@/store/skill-store";
 
 interface AddProjectDialogProps {
     onProjectAdded?: () => void;
@@ -38,8 +38,10 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
     const photosInputRef = useRef<HTMLInputElement>(null);
 
-    const { skills, isLoading: isLoadingSkills, fetchSkills } = useSkillsManager();
-    const { addProject } = useProjectManager();
+    const skills = useSkillStore((state) => state.skills);
+    const isLoadingSkills = useSkillStore((state) => state.isLoading);
+    const fetchSkills = useSkillStore((state) => state.fetchSkills);
+    // ❌ DIHAPUS: const addProject = useProjectStore((state) => state.addProject);
 
     const form = useForm<ProjectFormValues>({
         resolver: zodResolver(projectSchema),
@@ -251,8 +253,8 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                 skillId: data.skillId ?? [],
             };
 
-            // Panggil addProject dengan file
-            await addProject(filteredData, thumbnailFile, photoFiles);
+            // ✅ DIUBAH: Menggunakan addProject dari store secara langsung
+            await useProjectStore.getState().addProject(filteredData, thumbnailFile, photoFiles);
 
             resetForm();
             setIsOpen(false);

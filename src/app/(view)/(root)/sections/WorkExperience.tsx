@@ -1,4 +1,4 @@
-import { About } from "@/domain/admin/about-schema";
+import { About } from "@/schema/about-schema";
 import { SectionHeader } from "../components/SectionHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

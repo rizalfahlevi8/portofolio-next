@@ -5,15 +5,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Project, ProjectFormValues, projectSchema } from "@/domain/admin/project-schema";
-import { useSkillsManager } from "@/hooks/admin/useSkill";
+import { Project, ProjectFormValues, projectSchema } from "@/schema/project-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Loader2, MoreHorizontal, Plus, Save, Trash2, X, Upload, Image } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import NextImage from "next/image";
 import ReactSelect from "react-select";
 import toast from "react-hot-toast";
+import { useSkillStore } from "@/store/skill-store";
 
 interface ProjectEditDropdownProps {
     project: Project;
@@ -54,9 +54,8 @@ export function ProjectEditDropdown({
     const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
     const [deletedPhotos, setDeletedPhotos] = useState<string[]>([]);
 
-    // States for thumbnail and photos management
+    // State for thumbnail management
     const [thumbnailDeleted, setThumbnailDeleted] = useState<boolean>(false);
-    const [allPhotosDeleted, setAllPhotosDeleted] = useState<boolean>(false);
 
     // Upload states
     const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
@@ -66,7 +65,16 @@ export function ProjectEditDropdown({
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
     const photosInputRef = useRef<HTMLInputElement>(null);
 
-    const { skills, isLoading: isLoadingSkills, fetchSkills } = useSkillsManager();
+    const skills = useSkillStore((state) => state.skills);
+    const isLoadingSkills = useSkillStore((state) => state.isLoading);
+    const fetchSkills = useSkillStore((state) => state.fetchSkills);
+
+    // ✅ Computed value menggunakan useMemo - menggantikan useEffect yang menyebabkan error
+    const allPhotosDeleted = useMemo(() => {
+        const hasExistingPhotos = existingPhotos.length > 0;
+        const hasNewPhotos = photoFiles.length > 0;
+        return !hasExistingPhotos && !hasNewPhotos;
+    }, [existingPhotos, photoFiles]);
 
     const editForm = useForm<ProjectFormValues>({
         resolver: zodResolver(projectSchema),
@@ -97,13 +105,6 @@ export function ProjectEditDropdown({
     useEffect(() => {
         editForm.setValue("technology", technologyFields);
     }, [technologyFields, editForm]);
-
-    // Check if all photos will be deleted
-    useEffect(() => {
-        const hasExistingPhotos = existingPhotos.length > 0;
-        const hasNewPhotos = photoFiles.length > 0;
-        setAllPhotosDeleted(!hasExistingPhotos && !hasNewPhotos);
-    }, [existingPhotos, photoFiles]);
 
     // Handle thumbnail file change
     const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -291,7 +292,6 @@ export function ProjectEditDropdown({
 
         // Reset thumbnail and photos states
         setThumbnailDeleted(false);
-        setAllPhotosDeleted(false);
 
         setIsEditDialogOpen(true);
     };
@@ -327,7 +327,6 @@ export function ProjectEditDropdown({
             setExistingPhotos([]);
             setDeletedPhotos([]);
             setThumbnailDeleted(false);
-            setAllPhotosDeleted(false);
         }
     };
 

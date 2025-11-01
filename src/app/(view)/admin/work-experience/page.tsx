@@ -2,7 +2,6 @@
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { useWorkExperienceManager } from "@/hooks/admin/useWorkExperience";
 import {
   Code,
   Loader2,
@@ -17,22 +16,23 @@ import {
 import { useEffect, useState } from "react";
 import AddWorkExperienceDialog from "./components/workexperience-add-dialog";
 import { WorkExperienceEditDropdown } from "./components/workexperience-edit-dropdown";
-import { WorkExperienceFormValues } from "@/domain/admin/workexperience-schema";
+import { WorkExperienceFormValues } from "@/schema/workexperience-schema";
+import { useWorkExperienceStore } from "@/store/workexperience-store";
 
 export default function WorkExperience() {
-  const {
-    workExperiences,
-    isLoading: isLoadingWorkExperiences,
-    updateWorkExperience,
-    deleteWorkExperience,
-    fetchWorkExperiences,
-  } = useWorkExperienceManager();
+   const workExperiences = useWorkExperienceStore((state) => state.workExperiences);
+    const isLoadingWorkExperience = useWorkExperienceStore((state) => state.isLoading);
+    const fetchWorkExperience = useWorkExperienceStore((state) => state.fetchWorkExperiences);
+    const addWorkExperience = useWorkExperienceStore((state) => state.addWorkExperience);
+    const updateWorkExperience = useWorkExperienceStore((state) => state.updateWorkExperience);
+    const deleteWorkExperience = useWorkExperienceStore((state) => state.deleteWorkExperience);
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWorkExperiences();
-  }, [fetchWorkExperiences]);
+    fetchWorkExperience();
+  }, [fetchWorkExperience]);
 
   const validWorkExperiences =
     workExperiences?.filter((experience) => experience && experience.id) || [];
@@ -57,7 +57,7 @@ export default function WorkExperience() {
   };
 
   const handleWorkExperienceAdded = () => {
-    fetchWorkExperiences();
+    fetchWorkExperience();
   };
 
   const handleUpdateWorkExperience = async (
@@ -102,7 +102,7 @@ export default function WorkExperience() {
       </div>
       <Separator />
 
-      {isLoadingWorkExperiences ? (
+      {isLoadingWorkExperience ? (
         <div className="text-center py-12">
           <Loader2 className="h-8 w-8 mx-auto mb-4 animate-spin text-muted-foreground" />
           <p className="text-muted-foreground">Loading Pengalaman Kerja...</p>

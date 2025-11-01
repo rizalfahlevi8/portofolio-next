@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Sosmed, SosmedFormValues, sosmedSchema } from "@/domain/admin/sosmed-schema";
+import { Sosmed, SosmedFormValues, sosmedSchema } from "@/schema/sosmed-schema";
 import {
   DropdownMenu,
   DropdownMenuContent,

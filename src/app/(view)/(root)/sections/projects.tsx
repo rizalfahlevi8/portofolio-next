@@ -1,4 +1,4 @@
-import { About } from "@/domain/admin/about-schema";
+import { About } from "@/schema/about-schema";
 import { SectionHeader } from "../components/SectionHeader";
 import { Card } from "../components/Card";
 import grainImage from "@/assets/images/grain.jpg";

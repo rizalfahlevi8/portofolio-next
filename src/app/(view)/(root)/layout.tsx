@@ -1,7 +1,6 @@
 import { Inter, Calistoga } from "next/font/google";
 import "../../globals.css";
 import { twMerge } from "tailwind-merge";
-import { SWRProviders } from "../../../providers/swr-provider";
 
 const inter = Inter({ 
     subsets: ["latin"], 
@@ -31,9 +30,7 @@ export default function RootLayout({
             calistoga.variable, 
             "bg-gray-50 text-black antialiased font-sans"
         )}>
-            <SWRProviders>
-                {children}
-            </SWRProviders>
+            {children}
         </div>
     );
 }

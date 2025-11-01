@@ -2,7 +2,7 @@
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { SkillFormValues, skillSchema } from "@/domain/admin/skill-schema";
+import { SkillFormValues, skillSchema } from "@/schema/skill-schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -26,18 +26,17 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Code, ExternalLink, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
-import { useSkillsManager } from "@/hooks/admin/useSkill";
+import { useSkillStore } from "@/store/skill-store";
 import { SkillEditDropdown } from "@/app/(view)/admin/skill/components/skill-edit-dropdown";
 
 export default function Skill() {
-  const {
-    skills,
-    isLoading: isLoadingSkills,
-    addSkill,
-    updateSkill,
-    deleteSkill,
-    fetchSkills,
-  } = useSkillsManager();
+  const skills = useSkillStore((state) => state.skills);
+  const isLoadingSkills = useSkillStore((state) => state.isLoading);
+  const fetchSkills = useSkillStore((state) => state.fetchSkills);
+  const addSkill = useSkillStore((state) => state.addSkill);
+  const updateSkill = useSkillStore((state) => state.updateSkill);
+  const deleteSkill = useSkillStore((state) => state.deleteSkill);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);

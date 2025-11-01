@@ -1,4 +1,4 @@
-import { Skill } from "@/domain/admin/skill-schema";
+import { Skill } from "@/schema/skill-schema";
 import React, { Fragment } from "react";
 import { twMerge } from "tailwind-merge";
 

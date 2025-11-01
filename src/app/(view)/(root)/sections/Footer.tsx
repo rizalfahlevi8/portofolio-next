@@ -1,4 +1,4 @@
-import { About } from "@/domain/admin/about-schema";
+import { About } from "@/schema/about-schema";
 import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
 

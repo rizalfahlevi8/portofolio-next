@@ -20,8 +20,7 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { SosmedFormValues, sosmedSchema } from "@/domain/admin/sosmed-schema";
-import { useSosmedManager } from "@/hooks/admin/useSosmed";
+import { SosmedFormValues, sosmedSchema } from "@/schema/sosmed-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Code, Link2, Loader2, Plus, Save } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -29,16 +28,16 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { SosmedEditDropdown } from "./components/sosmed-edit-dropdown";
 import { extractUsernameFromUrl } from "@/lib/utils";
+import { useSosmedStore } from "@/store/sosmed-store";
 
 export default function Sosmed() {
-  const {
-    sosmed,
-    isLoading: isLoadingSosmed,
-    addSosmed,
-    updateSosmed,
-    deleteSosmed,
-    fetchSosmed,
-  } = useSosmedManager();
+  const sosmed = useSosmedStore((state) => state.sosmed);
+  const isLoadingSosmed = useSosmedStore((state) => state.isLoading);
+  const fetchSosmed = useSosmedStore((state) => state.fetchSosmed);
+  const addSosmed = useSosmedStore((state) => state.addSosmed);
+  const updateSosmed = useSosmedStore((state) => state.updateSosmed);
+  const deleteSosmed = useSosmedStore((state) => state.deleteSosmed);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);

@@ -5,7 +5,7 @@ import grainImage from "@/assets/images/grain.jpg";
 import StarIcon from "@/assets/icons/star.svg";
 import SparkleIcon from "@/assets/icons/sparkle.svg";
 import { HeroOrbit } from "../components/HeroOrbit";
-import { About } from "@/domain/admin/about-schema";
+import { About } from "@/schema/about-schema";
 import React from "react";
 
 interface HeroSectionProps {
