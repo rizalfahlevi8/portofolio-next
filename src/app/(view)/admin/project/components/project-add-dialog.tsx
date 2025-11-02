@@ -41,7 +41,6 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
     const skills = useSkillStore((state) => state.skills);
     const isLoadingSkills = useSkillStore((state) => state.isLoading);
     const fetchSkills = useSkillStore((state) => state.fetchSkills);
-    // ❌ DIHAPUS: const addProject = useProjectStore((state) => state.addProject);
 
     const form = useForm<ProjectFormValues>({
         resolver: zodResolver(projectSchema),
@@ -56,7 +55,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
             photo: [],
             skillId: [],
         },
-        mode: "onChange", // Enable real-time validation
+        mode: "onChange",
     });
 
     // Fetch skills on component mount
@@ -220,7 +219,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
             setIsUploadingThumbnail(!!thumbnailFile);
             setIsUploadingPhotos(photoFiles.length > 0);
 
-            // Validasi file & field tetap sama
+            // Validasi file & field
             if (!thumbnailFile) {
                 toast.error("Thumbnail harus diupload!");
                 setIsSubmitting(false);
@@ -245,7 +244,7 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                 return;
             }
 
-            // Prepare data (tanpa upload manual, biarkan backend yang handle upload)
+            // Prepare data
             const filteredData: ProjectFormValues = {
                 ...data,
                 feature: filteredFeatures,
@@ -280,16 +279,6 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
         }
     };
 
-    // Debug function to check form state
-    const checkFormState = () => {
-        console.log("Form errors:", form.formState.errors);
-        console.log("Form values:", form.getValues());
-        console.log("Feature fields:", featureFields);
-        console.log("Technology fields:", technologyFields);
-        console.log("Thumbnail file:", thumbnailFile);
-        console.log("Photo files:", photoFiles);
-    };
-
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
@@ -313,7 +302,6 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                         <form
                             onSubmit={form.handleSubmit(onSubmit, (errors) => {
                                 console.log("Form validation errors:", errors);
-                                checkFormState(); // Debug form state
                                 toast.error("Form tidak valid. Cek input kamu.");
                             })}
                             className="space-y-6"
@@ -676,34 +664,35 @@ export default function AddProjectDialog({ onProjectAdded }: AddProjectDialogPro
                                         )}
                                     />
                                 </div>
-                            </div>
 
-                            <div className="flex justify-end gap-2 pt-4">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => setIsOpen(false)}
-                                    disabled={isSubmitting}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={isSubmitting || isUploadingThumbnail || isUploadingPhotos}
-                                    className="flex items-center gap-2"
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                            Saving...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Save className="h-4 w-4" />
-                                            Save Project
-                                        </>
-                                    )}
-                                </Button>
+                                <div className="lg:col-span-full flex gap-2 pt-4">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setIsOpen(false)}
+                                        className="flex-1"
+                                        disabled={isSubmitting}
+                                    >
+                                        Batal
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        className="flex-1"
+                                        disabled={isSubmitting}
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                Menyimpan...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Save className="h-4 w-4 mr-2" />
+                                                Simpan Proyek
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
                             </div>
                         </form>
                     </Form>
